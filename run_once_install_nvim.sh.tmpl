@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Install Neovim if not already installed
+if ! command -v nvim &> /dev/null; then
+  echo "Installing Neovim..."
+  brew install neovim
+else
+  echo "Neovim is already installed"
+fi
+
+# Check if NvChad is already installed
+if [ ! -d "$HOME/.config/nvim" ]; then
+  echo "Installing NvChad..."
+  git clone https://github.com/NvChad/starter "$HOME/.config/nvim"
+  echo "NvChad installed. Launching Neovim for initial setup..."
+  nvim +"qall"
+else
+  echo "NvChad already set up"
+fi
+

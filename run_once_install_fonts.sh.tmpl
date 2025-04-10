@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Define the font name and download URL
+FONT_NAME="FiraCode"
+FONT_VERSION="v3.3.0"
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${FONT_VERSION}/${FONT_NAME}.zip"
+
+# Create a temporary directory for the font
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR" || exit
+
+# Download the font
+curl -fLo "${FONT_NAME}.zip" "$FONT_URL"
+
+# Unzip the font
+unzip "${FONT_NAME}.zip"
+
+# Create the fonts directory if it doesn't exist
+FONT_DIR="$HOME/Library/Fonts"
+mkdir -p "$FONT_DIR"
+
+# Move the font files to the fonts directory
+mv *.ttf "$FONT_DIR"
+
+# Clean up
+cd || exit
+rm -rf "$TEMP_DIR"
+
+# Refresh the font cache
+fc-cache -f "$FONT_DIR"
+
