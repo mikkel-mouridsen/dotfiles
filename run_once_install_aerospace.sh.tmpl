@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Check if Aerospace is already installed
+if ! command -v aerospace &> /dev/null; then
+    echo "Installing Aerospace..."
+    brew install --cask nikitabobko/tap/aerospace
+else
+    echo "Aerospace is already installed."
+fi

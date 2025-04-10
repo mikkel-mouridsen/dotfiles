@@ -1,31 +1,12 @@
 #!/bin/bash
 
-# Define the font name and download URL
-FONT_NAME="FiraCode"
-FONT_VERSION="v3.3.0"
-FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${FONT_VERSION}/${FONT_NAME}.zip"
+echo "Installing SF Mono Nerd Font"
 
-# Create a temporary directory for the font
-TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR" || exit
+brew tap shaunsingh/SFMono-Nerd-Font-Ligaturized
+brew install --cask font-sf-mono-nerd-font-ligaturized
 
-# Download the font
-curl -fLo "${FONT_NAME}.zip" "$FONT_URL"
+echo "Instlling Hack Nerd Font"
+brew install --cask font-hack-nerd-font
 
-# Unzip the font
-unzip "${FONT_NAME}.zip"
-
-# Create the fonts directory if it doesn't exist
-FONT_DIR="$HOME/Library/Fonts"
-mkdir -p "$FONT_DIR"
-
-# Move the font files to the fonts directory
-mv *.ttf "$FONT_DIR"
-
-# Clean up
-cd || exit
-rm -rf "$TEMP_DIR"
-
-# Refresh the font cache
-fc-cache -f "$FONT_DIR"
-
+echo "Installing SF Symbols"
+brew install --cask sf-symbols

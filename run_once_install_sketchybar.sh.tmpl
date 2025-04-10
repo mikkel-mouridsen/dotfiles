@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+# Check if SketchyBar is already installed
+if ! command -v sketchybar &> /dev/null; then
+    echo "Installing SketchyBar..."
+    brew tap felixkratz/formulae
+    brew install sketchybar
+
+else
+    echo "SketchyBar is already installed."
+fi
+
+# Permissions 
+chmod +x ~/.config/sketchybar/plugins/*.sh
+
+# Enable auto-hiding the macOS menu bar (for all desktops)
+echo "Hiding macOS menu bar..."
+defaults write NSGlobalDomain _HIHideMenuBar -bool true
+killall Dock  # restart the Dock to apply changes
+
+# Start SketchyBar as a brew service
+echo "Setting up SketchyBar service"
+brew services start sketchybar
