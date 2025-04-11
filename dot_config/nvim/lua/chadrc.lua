@@ -5,6 +5,8 @@
 ---@type ChadrcConfig
 local M = {}
 
+local ascii = require("ascii")
+
 M.base46 = {
 	theme = "catppuccin",
 
@@ -14,7 +16,10 @@ M.base46 = {
 	-- },
 }
 
--- M.nvdash = { load_on_startup = true }
+M.nvdash = { 
+  load_on_startup = true,
+  header = ascii.get_random_global(),
+}
 -- M.ui = {
 --       tabufline = {
 --          lazyload = false

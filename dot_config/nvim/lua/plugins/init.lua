@@ -13,6 +13,32 @@ return {
     end,
   },
 
+  {
+    "Civitasv/cmake-tools.nvim",
+    config = function()
+      require "configs.cmake"
+    end,
+    ft = { "cpp", "c", "cmake" },
+    cmd = { "CMakeGenerate", "CMakeBuild", "CMakeRun", "CMakeSelectBuildTarget", "CMakeSelectLaunchTarget" },
+  },
+
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("configs.telescope")
+    end,
+  },
+
+  {
+    "MaximilianLloyd/ascii.nvim",
+    dependencies = {
+      "MunifTanjim/nui.nvim"
+    },
+  }
+
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
   -- 	opts = {
