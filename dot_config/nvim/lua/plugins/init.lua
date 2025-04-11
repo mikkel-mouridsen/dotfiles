@@ -44,6 +44,11 @@ return {
     lazy = false,
   },
 
+  {
+    "christoomey/vim-tmux-navigator",
+    lazy = false,
+  },
+
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",
   -- 	opts = {
