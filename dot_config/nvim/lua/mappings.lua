@@ -7,6 +7,9 @@ local map = vim.keymap.set
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
+-- Go to references Telescope
+map("n", "gr", "<cmd>lua require('telescope.builtin').lsp_references({ previewer = true })<CR>", { desc = "Go to references" })
+
 
 -- Cmake Commnans
 local opts = { noremap = true, silent = true }
