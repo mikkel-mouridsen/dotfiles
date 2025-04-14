@@ -18,3 +18,11 @@ else
   echo "NvChad already set up"
 fi
 
+# Install LazyGit if not already installed
+if ! command -v lazygit &> /dev/null; then
+  echo "Installing lazygit..."
+  brew install jesseduffield/lazygit/lazygit
+else
+  echo "lazygit is already installed"
+fi
+
