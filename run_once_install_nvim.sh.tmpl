@@ -26,3 +26,10 @@ else
   echo "lazygit is already installed"
 fi
 
+# Install ascii-image-converter if not already installed
+if ! command -v ascii-image-converter &> /dev/null; then
+  echo "Installing ascii-image-converter..."
+  brew install TheZoraiz/ascii-image-converter/ascii-image-converter
+else
+  echo "ascii-image-converter is already installed"
+fi

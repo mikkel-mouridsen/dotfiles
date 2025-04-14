@@ -68,7 +68,19 @@ return {
     keys = {
       { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
     },    
-  }
+  },
+
+  {
+    "xiyaowong/transparent.nvim",
+    lazy = false,
+    config = function()
+      require("transparent").setup {
+        enable = true,
+        extra_groups = { "NvimTreeNormal" },
+        exclude = {},
+      }
+    end,
+  },
 
   -- {
   -- 	"nvim-treesitter/nvim-treesitter",

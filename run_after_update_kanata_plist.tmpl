@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Need to be installed manually: https://github.com/pqrs-org/Karabiner-DriverKit-VirtualHIDDevice/releases
+
+PLIST="/Library/LaunchDaemons/com.cobo.kanata.plist"
+VHD_MANAGER_PLIST="/Library/LaunchDaemons/com.cobo.karabiner-vhidmanager.plist"
+VHD_DAEMON_PLIST="/Library/LaunchDaemons/com.cobo.karabiner-vhiddaemon.plist"
+
+HOME_DIR="{{ .chezmoi.homeDir }}"
+
+# Kanata
+echo "Installing Kanata launchd plist..."
+sudo cp "$HOME_DIR/.config/kanata/com.cobo.kanata.plist" "$PLIST"
+sudo chown root:wheel "$PLIST"
+sudo chmod 644 "$PLIST"
+sudo launchctl bootstrap system "$PLIST"
+sudo launchctl enable system/com.cobo.kanata.plist
+
+# Karabiner-VHD
+echo "Installing Karabiner-VHD launchd plists..."
+sudo cp "$HOME_DIR/.config/kanata/com.cobo.karabiner-vhidmanager.plist" "$VHD_MANAGER_PLIST"
+sudo cp "$HOME_DIR/.config/kanata/com.cobo.karabiner-vhiddaemon.plist" "$VHD_DAEMON_PLIST"
+
+for plist in "$VHD_MANAGER_PLIST" "$VHD_DAEMON_PLIST"; do
+    sudo chown root:wheel "$plist"
+    sudo chmod 644 "$plist"
+    sudo launchctl bootstrap system "$plist"
+done
+
+sudo launchctl enable system/com.cobo.karabiner-vhidmanager.plist
+sudo launchctl enable system/com.cobo.karabiner-vhiddaemon.plist
+
+# Order: start virtual devices first, then kanata
+sudo launchctl start com.cobo.karabiner-vhidmanager
+sudo launchctl start com.cobo.karabiner-vhiddaemon
+sleep 1
+sudo launchctl start com.cobo.kanata

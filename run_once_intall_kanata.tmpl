@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Check if kanata is already installed
+if ! command -v kanata &> /dev/null; then
+    echo "Installing kanata..."
+    brew install kanata 
+else
+    echo "kanata is already installed."
+fi

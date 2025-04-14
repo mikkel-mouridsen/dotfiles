@@ -75,7 +75,7 @@ if.app-name-regex-substring = 'finder'
 run = 'layout floating'
 
 [[on-window-detected]]
-if.app-name-regex-substring = '(?i)\bstorybook\b'
+if.app-name-regex-substring = '(?i)(^|_|\W)storybook(_|\W|$)'
 run = 'layout floating'
 
 # 'main' binding mode declaration
