@@ -23,7 +23,7 @@ cursor-style = bar
 cursor-style-blink = false
 
 # ── Shell ────────────────────────────────────────────────────────
-command = /bin/sh -c 'if command -v distrobox >/dev/null 2>&1; then exec distrobox enter dev; else exec zsh; fi'
+command = zsh
 
 # ── Misc ─────────────────────────────────────────────────────────
 scrollback-limit = 4294967295

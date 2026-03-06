@@ -4,6 +4,11 @@ if [[ -d /opt/homebrew ]]; then
 fi
 export PATH="$HOME/.local/bin:$PATH"
 
+# ── Auto-enter distrobox (Linux host only) ───────────────────────
+if command -v distrobox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
+  exec distrobox enter dev
+fi
+
 # ── Auto-start tmux ──────────────────────────────────────────────
 if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
   tmux new-session -A -s main
