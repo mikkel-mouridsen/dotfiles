@@ -67,6 +67,12 @@ for f in "${CONFLICTS[@]}"; do
   fi
 done
 
+# ── TPM (tmux plugin manager) ───────────────────────────────────
+if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
+  echo "Installing TPM..."
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
 # ── Create parent directories stow expects ──────────────────────
 mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch}
 mkdir -p ~/.claude/{hooks,skills}
