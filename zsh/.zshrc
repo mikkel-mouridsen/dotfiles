@@ -6,7 +6,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # ── Auto-enter distrobox (Linux host only) ───────────────────────
 if command -v distrobox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
-  exec distrobox enter dev
+  exec distrobox enter dev -- zsh
 fi
 
 # ── Auto-start tmux ──────────────────────────────────────────────
