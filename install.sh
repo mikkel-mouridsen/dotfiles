@@ -55,6 +55,10 @@ CONFLICTS=(
   ~/.claude/skills/weekly-review
 )
 for f in "${CONFLICTS[@]}"; do
+  # Skip files that already resolve into the dotfiles repo (already stowed)
+  if [[ -e "$f" ]] && [[ "$(realpath "$f")" == "$DOTFILES_DIR"/* ]]; then
+    continue
+  fi
   if [[ -e "$f" && ! -L "$f" ]]; then
     echo "  Backing up $f -> ${f}.bak"
     mv "$f" "${f}.bak"
