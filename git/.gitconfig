@@ -1,0 +1,59 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[merge]
+    tool = vscode
+[diff]
+    tool = vscode
+    submodule = log
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    last = log -1 HEAD
+    cia = commit -a
+    preb = pull --rebase
+    ls = ls-files
+    lg = log --color --graph --date=format:'%Y-%m-%d %H:%M:%S' --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(cyan)<%an>%Creset' --abbrev-commit
+    sh = show
+    shno = show --name-only
+    adda = add --all
+    lastcimsg = log --format=%B -n 1 HEAD
+    modifiedFiles = diff-tree --no-commit-id --name-only -r
+    follow = log --follow --
+    cp = cherry-pick
+    cl = clone
+    unstage = reset HEAD --
+    dfc = diff --cached
+    df = diff
+    logTags = log --no-walk --tags
+    sts = status -s
+    amend = commit --amend
+    amendne = commit --amend --no-edit
+    check = diff --check
+    rih = "!git rebase -i HEAD~$1;"
+    ri = rebase -i
+    deleteremote = push origin --delete
+    lgn = lg -n
+    logn = log -n
+    alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+    coremote = co -t
+    supdate = submodule update --init --recursive
+    shns = show --name-status
+    pfwl = push --force-with-lease
+[difftool "vscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+[mergetool "vscode"]
+    cmd = code --wait $MERGED
+    keeptemporaries = false
+    keepbackups = false
+    prompt = false
+    trustexitcode = false
+[core]
+    editor = code --wait
+    excludesfile = ~/.config/git/ignore
+[include]
+    path = ~/.gitconfig.local

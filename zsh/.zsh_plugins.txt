@@ -1,0 +1,11 @@
+# Completions (load before compinit)
+zsh-users/zsh-completions kind:fpath
+
+# Autosuggestions
+zsh-users/zsh-autosuggestions
+
+# fzf integration
+unixorn/fzf-zsh-plugin
+
+# Syntax highlighting (must be last)
+zsh-users/zsh-syntax-highlighting
