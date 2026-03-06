@@ -9,6 +9,9 @@ if command -v distrobox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
   exec distrobox enter dev -- zsh
 fi
 
+# ── Ensure SHELL is zsh (needed for tmux inside distrobox) ───────
+export SHELL="$(which zsh)"
+
 # ── Auto-start tmux ──────────────────────────────────────────────
 if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
   tmux new-session -A -s main
