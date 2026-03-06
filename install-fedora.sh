@@ -19,7 +19,7 @@ sudo dnf install -y \
   zoxide \
   jq \
   git \
-  neofetch \
+  fastfetch \
   libnotify   # for notify-send
 
 # ── Starship ─────────────────────────────────────────────────────
