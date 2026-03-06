@@ -50,14 +50,19 @@ else
   try_install "Lazygit" sudo dnf install -y lazygit
 fi
 
-# ── Yazi ─────────────────────────────────────────────────────────
+# ── Yazi (pre-built binary from GitHub) ──────────────────────────
 if command -v yazi &>/dev/null; then
   SKIPPED+=("Yazi (already installed)")
-elif command -v cargo &>/dev/null; then
-  echo "Installing Yazi..."
-  try_install "Yazi" cargo install --locked --force yazi-fm yazi-cli
 else
-  SKIPPED+=("Yazi (no cargo -- install Rust first)")
+  echo "Installing Yazi..."
+  try_install "Yazi" bash -c '
+    YAZI_VERSION=$(curl -sS https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r .tag_name) &&
+    curl -Lo /tmp/yazi.zip "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip" &&
+    unzip -o /tmp/yazi.zip -d /tmp/yazi &&
+    sudo mv /tmp/yazi/yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/ &&
+    sudo mv /tmp/yazi/yazi-x86_64-unknown-linux-gnu/ya /usr/local/bin/ &&
+    rm -rf /tmp/yazi /tmp/yazi.zip
+  '
 fi
 
 # ── Vivid (LS_COLORS generator) ─────────────────────────────────
