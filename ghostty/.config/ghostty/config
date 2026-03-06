@@ -22,6 +22,9 @@ macos-titlebar-style = transparent
 cursor-style = bar
 cursor-style-blink = false
 
+# ── Shell ────────────────────────────────────────────────────────
+command = zsh
+
 # ── Misc ─────────────────────────────────────────────────────────
 scrollback-limit = 4294967295
 quick-terminal-animation-duration = 1
