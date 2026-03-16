@@ -23,6 +23,7 @@ cd ~/dotfiles
 | `neofetch` | Neofetch config                          |
 | `zsh`      | Shared .zshrc + antidote plugin list     |
 | `claude`   | Claude Code settings, hooks, and skills  |
+| `gh-dash`  | GitHub dashboard config (gh-dash)        |
 
 ## Machine-Specific Config
 
@@ -50,3 +51,4 @@ cd ~/dotfiles && stow -R <package>
 - **nvim**: Open nvim, Lazy.nvim will auto-install plugins on first launch
 - **zsh**: Create `~/.zshrc.local` with your secrets and machine-specific config
 - **git**: Create `~/.gitconfig.local` with your `[user]` block
+- **gh-dash**: Run `gh dash`. Add repos to `repoPaths` in `~/.config/gh-dash/config.yml` to enable keybindings (`g` lazygit, `C` Claude Code PR review)

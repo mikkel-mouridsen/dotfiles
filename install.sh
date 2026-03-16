@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-PACKAGES=(nvim tmux ghostty starship bat git neofetch zsh claude)
+PACKAGES=(nvim tmux ghostty starship bat git neofetch zsh claude gh-dash)
 
 echo "=== Dotfiles Setup ==="
 echo ""
@@ -53,6 +53,7 @@ CONFLICTS=(
   ~/.claude/skills/pr-feedback
   ~/.claude/skills/vault-writer
   ~/.claude/skills/weekly-review
+  ~/.config/gh-dash/config.yml
 )
 for f in "${CONFLICTS[@]}"; do
   # Skip files that already resolve into the dotfiles repo (already stowed)
@@ -74,7 +75,7 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
 fi
 
 # ── Create parent directories stow expects ──────────────────────
-mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch}
+mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch,gh-dash}
 mkdir -p ~/.claude/{hooks,skills}
 
 # ── Stow each package ───────────────────────────────────────────
