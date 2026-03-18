@@ -93,4 +93,6 @@ ok "TUI dependencies installed"
 # ── 8. Launch TUI ───────────────────────────────────────────────
 log "Launching dotfiles manager..."
 echo ""
+# Reattach stdin to terminal — needed when bootstrap is piped (curl | bash)
+exec </dev/tty
 exec bun run "$DOTFILES_DIR/tui/index.ts"
