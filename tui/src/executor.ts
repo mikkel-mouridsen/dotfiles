@@ -45,10 +45,16 @@ export class Executor {
         }
       }
 
-      // 3. Stow packages
+      // 3. Stow packages (adopt existing files on conflict, then restore repo versions)
       for (const pkg of mod.stowPackages) {
         this.log(`Stowing ${pkg}...`);
-        await this.runCommand(`cd "${this.dotfilesDir}" && stow -v --target="$HOME" "${pkg}"`);
+        try {
+          await this.runCommand(`cd "${this.dotfilesDir}" && stow -v --target="$HOME" "${pkg}"`);
+        } catch {
+          this.log(`Conflict detected — adopting existing files for ${pkg}...`);
+          await this.runCommand(`cd "${this.dotfilesDir}" && stow --adopt -v --target="$HOME" "${pkg}"`);
+          await this.runCommand(`cd "${this.dotfilesDir}" && git checkout -- "${pkg}"`);
+        }
       }
 
       // 4. Post-install hooks
