@@ -2,7 +2,8 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-PACKAGES=(nvim tmux ghostty starship bat git neofetch zsh claude gh-dash)
+PACKAGES=(nvim tmux ghostty starship bat git neofetch zsh claude gh-dash \
+          fish hyprland quickshell mako kanata hyprlock hypridle)
 
 echo "=== Dotfiles Setup ==="
 echo ""
@@ -54,6 +55,21 @@ CONFLICTS=(
   ~/.claude/skills/vault-writer
   ~/.claude/skills/weekly-review
   ~/.config/gh-dash/config.yml
+  # Hyprland packages
+  ~/.config/hypr/hyprland.conf
+  ~/.config/hypr/hyprlock.conf
+  ~/.config/hypr/hypridle.conf
+  # Fish
+  ~/.config/fish/config.fish
+  # Quickshell
+  ~/.config/quickshell/manifest.conf
+  ~/.config/quickshell/shell.qml
+  # Hyprland colors (now stow-managed)
+  ~/.config/hypr/colors.conf
+  # Mako base config
+  ~/.config/mako/config
+  # Kanata
+  ~/.config/kanata/laptop.kbd
 )
 for f in "${CONFLICTS[@]}"; do
   # Skip files that already resolve into the dotfiles repo (already stowed)
@@ -76,6 +92,8 @@ fi
 
 # ── Create parent directories stow expects ──────────────────────
 mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch,gh-dash}
+mkdir -p ~/.config/{hypr,fish/conf.d,fish/functions,quickshell,mako,kanata}
+mkdir -p ~/.config/systemd/user
 mkdir -p ~/.claude/{hooks,skills}
 
 # ── Stow each package ───────────────────────────────────────────
@@ -102,3 +120,9 @@ echo "      email = your@email.com"
 echo ""
 echo "Run 'tmux' then press C-Space I to install tmux plugins."
 echo "Open 'nvim' to let Lazy.nvim install plugins."
+echo ""
+echo "── Arch / Hyprland ───────────────────────────────────────────"
+echo ""
+echo "For a full CachyOS/Arch setup, run ./install-arch.sh instead."
+echo "It installs packages, sets up kanata, bootstraps fish, then"
+echo "calls this script automatically."

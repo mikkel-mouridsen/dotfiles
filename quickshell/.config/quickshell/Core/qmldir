@@ -1,0 +1,5 @@
+module Core
+singleton Colors 1.0 Colors.qml
+singleton Animations 1.0 Animations.qml
+singleton State 1.0 State.qml
+singleton Icons 1.0 Icons.qml

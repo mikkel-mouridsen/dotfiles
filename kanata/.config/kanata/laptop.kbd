@@ -1,0 +1,57 @@
+;; ── kanata config: laptop built-in keyboard ─────────────────────
+;; Only applies to the laptop internal keyboard.
+;; The split keyboard (Miryoku) is handled by its own QMK/ZMK firmware.
+;;
+;; Device path is read from ~/.config/kanata/device.local (not tracked).
+;; Create that file with a single line: /dev/input/by-path/...
+;;
+;; Home row mods use GACS order (Meta/Alt/Ctrl/Shift) matching Miryoku.
+
+(defcfg
+  process-unmapped-keys yes
+  ;; Device path — override with device.local
+  linux-dev-names-include ("AT Translated Set 2 keyboard")
+)
+
+;; ── Source layout: standard QWERTY ───────────────────────────────
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+;; ── Aliases ───────────────────────────────────────────────────────
+;; Home row mods — GACS (bottom to top on each hand for symmetry with Miryoku)
+;; Left: A=Meta  S=Alt  D=Ctrl  F=Shift
+;; Right: J=Shift  K=Ctrl  L=Alt  ;=Meta
+;;
+;; Using tap-hold-release: tap fires the letter, hold fires the modifier.
+;; 200ms hold timeout keeps it snappy while avoiding accidental triggers.
+
+(defalias
+  ;; CapsLock: tap = Escape, hold = Left Ctrl
+  caps (tap-hold-release 200 200 esc lctl)
+
+  ;; Left home row mods
+  a_m  (tap-hold-release 200 200 a lmet)
+  s_a  (tap-hold-release 200 200 s lalt)
+  d_c  (tap-hold-release 200 200 d lctl)
+  f_s  (tap-hold-release 200 200 f lsft)
+
+  ;; Right home row mods
+  j_s  (tap-hold-release 200 200 j rsft)
+  k_c  (tap-hold-release 200 200 k rctl)
+  l_a  (tap-hold-release 200 200 l lalt)
+  ;_m  (tap-hold-release 200 200 ; rmet)
+)
+
+;; ── Default layer ─────────────────────────────────────────────────
+(deflayer base
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  @caps @a_m @s_a @d_c @f_s g    h    @j_s @k_c @l_a @;_m '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)

@@ -1,0 +1,5 @@
+set -gx BAT_THEME "Catppuccin Mocha"
+set -gx FZF_DEFAULT_OPTS "$FZF_DEFAULT_OPTS --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8,fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc,marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8,border:#45475a"
+if command -q vivid
+    set -gx LS_COLORS (vivid generate catppuccin-mocha 2>/dev/null)
+end

@@ -1,5 +1,5 @@
 # ── Font ─────────────────────────────────────────────────────────
-font-family = Liga SFMono Nerd Font
+font-family = JetBrainsMono Nerd Font
 font-size = 14
 font-feature = calt
 font-feature = liga
@@ -23,7 +23,9 @@ cursor-style = bar
 cursor-style-blink = false
 
 # ── Shell ────────────────────────────────────────────────────────
-command = zsh
+# Use fish on systems where it's installed; falls back to system default if not.
+# Uncomment the line below once fish is bootstrapped on this machine:
+# command = fish
 
 # ── Misc ─────────────────────────────────────────────────────────
 scrollback-limit = 4294967295
