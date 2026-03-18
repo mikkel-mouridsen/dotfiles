@@ -1,75 +1,90 @@
-/* ── Catppuccin Mocha theme for ReGreet ──────────────────────── */
-/* Matches hyprlock aesthetic: base #1e1e2e, mauve #cba6f7 accent */
+/* ── ReGreet overrides on top of catppuccin-mocha-mauve GTK theme ─
+ *
+ * The GTK theme handles all widget colors, fonts, borders etc.
+ * This CSS only tweaks layout/transparency so the login box floats
+ * over the blurred wallpaper — matching the hyprlock aesthetic.
+ *
+ * Widget tree (from ReGreet templates.rs):
+ *   Overlay
+ *   ├── Picture                        wallpaper
+ *   ├── Frame.background               main login box
+ *   │   └── Grid                       form layout
+ *   ├── Frame.background #clock_frame  clock (top-center)
+ *   └── Box                            bottom (errors + power buttons)
+ * ─────────────────────────────────────────────────────────────── */
 
-* {
-    font-family: "MonaspiceNe Nerd Font", monospace;
-}
-
-window {
+/* Let the wallpaper show through */
+window.background {
     background-color: transparent;
 }
 
-/* Main login box */
-#body {
-    background-color: alpha(#1e1e2e, 0.85);
+/* Main login box — semi-transparent with accent border */
+frame.background {
+    background-color: alpha(@window_bg_color, 0.82);
+    border: 2px solid alpha(@accent_color, 0.40);
+    border-radius: 16px;
+}
+
+frame.background > border {
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
+}
+
+/* Login form grid spacing */
+frame.background > grid {
+    margin: 28px 32px;
+}
+
+/* Clock frame — semi-transparent, hugs top edge */
+#clock_frame {
+    background-color: alpha(@window_bg_color, 0.75);
+    border: 2px solid alpha(@accent_color, 0.30);
+}
+
+#clock_frame > border {
+    background-color: transparent;
+    border: none;
+}
+
+#clock_frame label {
+    font-size: 36px;
+    font-weight: 800;
+    padding: 10px 28px;
+}
+
+/* Entry fields — rounded to match hyprlock rounding=12 */
+entry, passwordentry {
     border-radius: 12px;
-    border: 2px solid alpha(#cba6f7, 0.65);
-    padding: 48px 36px;
-    box-shadow: 0 8px 32px alpha(#000000, 0.5);
+    min-height: 28px;
 }
 
-/* Text labels */
-label {
-    color: #cdd6f4;
-}
-
-/* Entry fields (username, password) */
-entry {
-    background-color: #313244;
-    color: #cdd6f4;
-    border: 1px solid #45475a;
+/* Combo box buttons */
+combobox button {
     border-radius: 12px;
-    padding: 8px 12px;
-    caret-color: #cba6f7;
-    min-height: 20px;
-}
-
-entry:focus {
-    border-color: #cba6f7;
-    box-shadow: 0 0 0 1px alpha(#cba6f7, 0.3);
+    min-height: 28px;
 }
 
 /* Login button */
-button {
-    background-color: #cba6f7;
-    color: #1e1e2e;
+button.suggested-action {
     border-radius: 12px;
-    padding: 8px 24px;
-    border: none;
+    padding: 10px 36px;
     font-weight: bold;
-    min-height: 20px;
+    font-size: 15px;
 }
 
-button:hover {
-    background-color: #b4befe;
+/* All other buttons */
+button {
+    border-radius: 12px;
 }
 
-button:active {
-    background-color: #a6adc8;
+/* Power buttons — subtle until hovered */
+button.destructive-action {
+    background-color: transparent;
+    border-radius: 12px;
 }
 
-/* Combo boxes (session selector, etc.) */
-combobox button {
-    background-color: #313244;
-    color: #cdd6f4;
-    border: 1px solid #45475a;
-}
-
-combobox button:hover {
-    border-color: #cba6f7;
-}
-
-/* Error messages */
-#error-label {
-    color: #f38ba8;
+/* Error bar */
+infobar {
+    border-radius: 12px;
 }

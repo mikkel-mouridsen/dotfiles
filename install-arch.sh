@@ -59,6 +59,7 @@ fi
 AUR_PKGS=(
   quickshell-git             # Quickshell — QML-based desktop shell for Wayland
   kanata-bin                 # keyboard remapper (pre-built binary, faster than kanata)
+  catppuccin-gtk-theme-mocha # Catppuccin Mocha GTK theme (used by greetd greeter)
 )
 
 $AUR_HELPER -S --needed --noconfirm "${AUR_PKGS[@]}" || warn "Some AUR packages failed — check output above"

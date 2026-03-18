@@ -8,12 +8,14 @@ Scope {
     property bool powerMenuOpen: false
     property bool musicPlayerOpen: false
     property bool controlCenterOpen: false
+    property bool wallpaperPickerOpen: false
 
     function closeAll() {
         launcherOpen = false
         powerMenuOpen = false
         musicPlayerOpen = false
         controlCenterOpen = false
+        wallpaperPickerOpen = false
     }
 
     function toggleLauncher() {
@@ -65,6 +67,19 @@ Scope {
         target: "controlcenter"
         function handleCall(action: string) {
             if (action === "toggle") toggleControlCenter()
+        }
+    }
+
+    function toggleWallpaperPicker() {
+        let next = !wallpaperPickerOpen
+        closeAll()
+        wallpaperPickerOpen = next
+    }
+
+    IpcHandler {
+        target: "wallpaperpicker"
+        function handleCall(action: string) {
+            if (action === "toggle") toggleWallpaperPicker()
         }
     }
 }

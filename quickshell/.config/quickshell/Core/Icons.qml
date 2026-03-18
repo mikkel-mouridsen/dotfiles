@@ -43,6 +43,7 @@ QtObject {
     readonly property string profile_performance: "\uf0e4"
     readonly property string notification: "\uf0a2"
     readonly property string clear_all: "\uf12d"
+    readonly property string wallpaper: "\uf03e"
 
     function batteryIcon(percent, charging) {
         if (charging) return battery_charging

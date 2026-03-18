@@ -61,6 +61,7 @@ CONFLICTS=(
   ~/.config/hypr/hypridle.conf
   # Fish
   ~/.config/fish/config.fish
+  ~/.config/fish/conf.d/theme.fish
   # Quickshell
   ~/.config/quickshell/manifest.conf
   ~/.config/quickshell/shell.qml
@@ -70,6 +71,9 @@ CONFLICTS=(
   ~/.config/mako/config
   # Kanata
   ~/.config/kanata/laptop.kbd
+  # GTK theme
+  ~/.config/gtk-3.0/settings.ini
+  ~/.config/gtk-4.0/settings.ini
 )
 for f in "${CONFLICTS[@]}"; do
   # Skip files that already resolve into the dotfiles repo (already stowed)
@@ -93,6 +97,7 @@ fi
 # ── Create parent directories stow expects ──────────────────────
 mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch,gh-dash}
 mkdir -p ~/.config/{hypr,fish/conf.d,fish/functions,quickshell,mako,kanata}
+mkdir -p ~/.config/{gtk-3.0,gtk-4.0}
 mkdir -p ~/.config/systemd/user
 mkdir -p ~/.claude/{hooks,skills}
 

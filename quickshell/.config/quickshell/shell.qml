@@ -26,4 +26,5 @@ ShellRoot {
     Loader { source: "Modules/Notifications/NotificationPopup.qml" }
     Loader { source: "Modules/MusicPlayer/MusicPlayerPopup.qml" }
     Loader { source: "Modules/ControlCenter/ControlCenter.qml" }
+    Loader { source: "Modules/WallpaperPicker/WallpaperPicker.qml" }
 }
