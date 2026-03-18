@@ -84,13 +84,35 @@ if ! command -v stow &>/dev/null; then
 fi
 ok "stow available"
 
-# ── 7. Install TUI dependencies ─────────────────────────────────
+# ── 7. Install kitty (needed for TUI on fresh installs) ─────────
+if ! command -v kitty &>/dev/null; then
+  log "Installing kitty terminal..."
+  case "$DISTRO" in
+    arch)   $PKG_INSTALL kitty ;;
+    fedora) $PKG_INSTALL kitty ;;
+    ubuntu|debian) $PKG_INSTALL kitty ;;
+    macos)  $PKG_INSTALL kitty ;;
+  esac
+fi
+ok "kitty available"
+
+# ── 8. Install TUI dependencies ─────────────────────────────────
 log "Installing TUI dependencies..."
 cd "$DOTFILES_DIR/tui"
 bun install
 ok "TUI dependencies installed"
 
-# ── 8. Launch TUI ───────────────────────────────────────────────
+# ── 9. Launch TUI ───────────────────────────────────────────────
 log "Launching dotfiles manager..."
 echo ""
-exec bun run "$DOTFILES_DIR/tui/index.ts"
+TUI_CMD="bun run $DOTFILES_DIR/tui/index.ts"
+if [[ "$TERM" == "linux" ]] || [[ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]]; then
+  # No graphical session — can't launch kitty, run directly
+  exec $TUI_CMD
+elif [[ "$(cat /proc/$PPID/comm 2>/dev/null)" == "kitty" ]] || [[ "$TERM" == *kitty* ]]; then
+  # Already inside kitty
+  exec $TUI_CMD
+else
+  # Launch inside kitty for proper key input support
+  exec kitty --title "Dotfiles Installer" -e bash -c "$TUI_CMD"
+fi
