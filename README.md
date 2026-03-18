@@ -7,7 +7,7 @@ Personal dotfiles for Arch/CachyOS + Hyprland, managed with [GNU Stow](https://w
 One-liner bootstrap for a fresh system:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cobaltgit/dotfiles/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mikkel-mouridsen/dotfiles/main/bootstrap.sh | bash
 ```
 
 This installs dependencies (git, bun, stow), clones the repo, and launches the TUI to interactively select what to install.
