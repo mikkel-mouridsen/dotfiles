@@ -5,7 +5,20 @@ import Quickshell.Hyprland
 import "../../../Core" as Core
 
 RowLayout {
-    spacing: 4
+    spacing: 8
+
+    Text {
+        text: Core.Icons.arch
+        font.pixelSize: 18
+        font.family: "Symbols Nerd Font"
+        color: Core.Colors.accent
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Hyprland.dispatch("exec [float;size 1000 600;center] ghostty -e bash -c 'printf \"\\033[?25l\"; fastfetch; sleep infinity'")
+        }
+    }
 
     Repeater {
         model: 9
@@ -22,10 +35,11 @@ RowLayout {
                 return false
             }
 
-            width: active ? 24 : 10
-            height: 10
-            radius: 5
-            color: active ? Core.Colors.accent : occupied ? Core.Colors.surface1 : Core.Colors.surface0
+            width: active ? 28 : 12
+            height: 12
+            radius: 6
+            color: Core.Colors.accent
+            opacity: active ? 1.0 : 0.2
 
             Behavior on width {
                 NumberAnimation {
@@ -37,6 +51,13 @@ RowLayout {
             Behavior on color {
                 ColorAnimation {
                     duration: Core.Animations.durationFast
+                }
+            }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Core.Animations.durationFast
+                    easing.type: Core.Animations.easingType
                 }
             }
 

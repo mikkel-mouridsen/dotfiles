@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
 import "../../Core" as Core
@@ -17,16 +18,16 @@ PanelWindow {
     anchors.left: true
     anchors.right: true
 
-    implicitHeight: 420
+    implicitHeight: 370
 
     margins.top: 56
 
     visible: Core.State.musicPlayerOpen
     color: "transparent"
 
-    // Input mask: only the panel rectangle receives clicks
-    mask: Region { item: panel }
+    mask: Region { item: borderGlow }
 
+    property int heroHeight: 160
 
     function close() { Core.State.musicPlayerOpen = false }
 
@@ -61,85 +62,152 @@ PanelWindow {
         onActivated: popup.close()
     }
 
-    // Panel — centered, solid
+    // Gradient border (mauve → lavender)
     Rectangle {
+        id: borderGlow
+        anchors.centerIn: panel
+        width: panel.width + 4
+        height: panel.height + 4
+        radius: 18
+        gradient: Gradient {
+            orientation: Gradient.Horizontal
+            GradientStop { position: 0.0; color: Qt.rgba(0.796, 0.651, 0.969, 0.67) }
+            GradientStop { position: 1.0; color: Qt.rgba(0.706, 0.745, 0.996, 0.67) }
+        }
+    }
+
+    // Single unified card
+    Item {
         id: panel
-        width: 340
-        height: 420
+        width: 380
+        height: 350
         anchors.horizontalCenter: parent.horizontalCenter
-        color: Core.Colors.mantle
-        radius: 16
-        border.width: 1
-        border.color: Core.Colors.glassBorder
 
-        ColumnLayout {
+        // Rounded mask
+        Rectangle {
+            id: mask
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 0
+            radius: 16
+            visible: false
+        }
 
-            // Header: identity + close button
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 8
+        // Visual content (rendered offscreen, then masked)
+        Item {
+            id: visualContent
+            anchors.fill: parent
+            visible: false
 
-                Text {
-                    text: Services.MprisService.identity
-                    color: Core.Colors.overlay0
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 11
-                    font.weight: Font.Medium
-                    elide: Text.ElideRight
-                    Layout.fillWidth: true
-                }
-
-                Text {
-                    text: Core.Icons.close
-                    color: closeArea.containsMouse ? Core.Colors.text : Core.Colors.overlay0
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 13
-
-                    Behavior on color { ColorAnimation { duration: 150 } }
-
-                    MouseArea {
-                        id: closeArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: popup.close()
-                    }
-                }
+            // Cover art hero (top)
+            Image {
+                width: parent.width
+                height: popup.heroHeight
+                source: Services.MprisService.artUrl
+                fillMode: Image.PreserveAspectCrop
+                verticalAlignment: Image.AlignVCenter
+                visible: status === Image.Ready
             }
 
-            Item { Layout.preferredHeight: 14 }
-
-            // Album art
+            // Fallback hero background when no art
             Rectangle {
-                Layout.preferredWidth: 200
-                Layout.preferredHeight: 200
-                Layout.alignment: Qt.AlignHCenter
-                radius: 14
+                width: parent.width
+                height: popup.heroHeight
                 color: Core.Colors.surface0
-                clip: true
+                visible: Services.MprisService.artUrl === ""
+            }
 
-                Image {
-                    id: albumArt
-                    anchors.fill: parent
-                    source: Services.MprisService.artUrl
-                    fillMode: Image.PreserveAspectCrop
-                    visible: status === Image.Ready
-                }
+            // Fallback music note icon
+            Text {
+                width: parent.width
+                y: 0
+                height: popup.heroHeight
+                text: Core.Icons.music_note
+                color: Core.Colors.overlay0
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 44
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                visible: Services.MprisService.artUrl === ""
+            }
 
-                Text {
-                    anchors.centerIn: parent
-                    text: Core.Icons.music_note
-                    color: Core.Colors.overlay0
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 44
-                    visible: albumArt.status !== Image.Ready
+            // Darken cover art + gradient fade
+            Rectangle {
+                width: parent.width
+                height: popup.heroHeight
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.rgba(0.118, 0.118, 0.180, 0.3) }
+                    GradientStop { position: 0.6; color: Qt.rgba(0.118, 0.118, 0.180, 0.3) }
+                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.7) }
                 }
             }
 
-            Item { Layout.preferredHeight: 14 }
+            // Player identity on hero
+            Text {
+                x: 16
+                y: 16
+                text: Services.MprisService.identity
+                color: Core.Colors.text
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 14
+                font.weight: Font.Bold
+            }
+
+            // Content background
+            Rectangle {
+                y: popup.heroHeight
+                width: parent.width
+                height: parent.height - popup.heroHeight
+                color: Core.Colors.mantle
+            }
+
+            // Separator
+            Rectangle {
+                y: popup.heroHeight
+                width: parent.width - 16
+                height: 1
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: Core.Colors.glassBorder
+            }
+        }
+
+        // Apply rounded mask
+        OpacityMask {
+            anchors.fill: visualContent
+            source: visualContent
+            maskSource: mask
+        }
+
+        // Block pass-through clicks
+        MouseArea { anchors.fill: parent }
+
+        // Close button (interactive, over hero)
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 16
+            y: 16
+            text: Core.Icons.close
+            color: closeArea.containsMouse ? Core.Colors.text : Core.Colors.overlay1
+            font.family: "JetBrainsMono Nerd Font"
+            font.pixelSize: 13
+
+            Behavior on color { ColorAnimation { duration: 150 } }
+
+            MouseArea {
+                id: closeArea
+                anchors.fill: parent
+                anchors.margins: -4
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: popup.close()
+            }
+        }
+
+        // Interactive content below hero
+        ColumnLayout {
+            y: popup.heroHeight + 14
+            width: parent.width - 40
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: parent.height - popup.heroHeight - 20
+            spacing: 0
 
             // Song title
             Text {
@@ -163,7 +231,7 @@ PanelWindow {
                 visible: text !== ""
             }
 
-            Item { Layout.preferredHeight: 10 }
+            Item { Layout.preferredHeight: 12 }
 
             // Progress bar
             Item {
@@ -227,7 +295,7 @@ PanelWindow {
                 }
             }
 
-            Item { Layout.fillHeight: true }
+            Item { Layout.preferredHeight: 10 }
 
             // Transport controls
             RowLayout {

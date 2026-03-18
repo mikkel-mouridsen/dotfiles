@@ -4,6 +4,6 @@ if status is-interactive
     and not set -q TMUX
     and not set -q TMUX_PASSTHROUGH
     and command -q tmux
-    # Attach to existing session named "main", or create it.
-    tmux new-session -A -s main
+    # Create a new session for each terminal window.
+    tmux new-session
 end

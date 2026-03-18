@@ -3,6 +3,7 @@ import QtQuick
 
 QtObject {
     // Nerd Font icon mappings
+    readonly property string arch: "\uf303"
     readonly property string workspace: "\uf4e2"
     readonly property string clock: "\uf64f"
     readonly property string battery_full: "\uf240"
