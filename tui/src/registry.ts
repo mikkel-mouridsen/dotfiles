@@ -387,6 +387,26 @@ systemctl --user enable --now kanata-laptop.service || true`,
     ],
   },
   {
+    id: "bluetui",
+    name: "Bluetui",
+    description: "TUI for managing Bluetooth devices — scan, pair, connect",
+    category: "system",
+    core: false,
+    stowPackages: [],
+    systemPackages: {
+      pacman: ["bluetui", "bluez", "bluez-utils"],
+    },
+    onlyOn: ["arch"],
+    postInstall: [
+      {
+        description: "Enable bluetooth service",
+        command: "sudo systemctl enable --now bluetooth || true",
+        sudo: true,
+        onlyOn: ["arch"],
+      },
+    ],
+  },
+  {
     id: "tailscale",
     name: "Tailscale",
     description: "Mesh VPN with tsui TUI dashboard by Neuralink",
