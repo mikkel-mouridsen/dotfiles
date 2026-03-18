@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
 import "../../Core" as Core
+import "../../Services" as Services
 
 PanelWindow {
     id: notifWindow
@@ -27,10 +28,13 @@ PanelWindow {
     visible: notifModel.count > 0
     exclusionMode: ExclusionMode.Ignore
 
-    NotificationServer {
-        id: notifServer
+    ListModel {
+        id: notifModel
+    }
 
-        onNotification: function(notification) {
+    Connections {
+        target: Services.NotificationService
+        function onNewNotification(notification) {
             // Keep at most 3 visible
             while (notifModel.count >= 3) {
                 notifModel.remove(0)
@@ -52,10 +56,6 @@ PanelWindow {
                 timer.destroy()
             })
         }
-    }
-
-    ListModel {
-        id: notifModel
     }
 
     ColumnLayout {

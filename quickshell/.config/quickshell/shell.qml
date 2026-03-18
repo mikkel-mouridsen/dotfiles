@@ -3,7 +3,9 @@ import Quickshell.Io
 import QtQuick
 
 ShellRoot {
-    Component.onCompleted: console.log("Quickshell loaded")
+    Component.onCompleted: {
+        console.log("Quickshell loaded")
+    }
 
     Variants {
         model: Quickshell.screens
@@ -22,4 +24,6 @@ ShellRoot {
     Loader { source: "Modules/Launcher/Launcher.qml" }
     Loader { source: "Modules/PowerMenu/PowerMenu.qml" }
     Loader { source: "Modules/Notifications/NotificationPopup.qml" }
+    Loader { source: "Modules/MusicPlayer/MusicPlayerPopup.qml" }
+    Loader { source: "Modules/ControlCenter/ControlCenter.qml" }
 }

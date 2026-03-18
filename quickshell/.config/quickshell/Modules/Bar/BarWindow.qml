@@ -21,14 +21,14 @@ PanelWindow {
     }
 
     margins {
-        top: 5
-        left: 8
-        right: 8
+        top: 8
+        left: 28
+        right: 28
     }
 
-    height: 40
+    implicitHeight: 40
     color: "transparent"
-    exclusiveZone: 45  // height (40) + top margin (5)
+    exclusiveZone: 28  // tuned so bar-to-window gap = gaps_in (8)
     exclusionMode: ExclusionMode.Normal
 
     Rectangle {
@@ -61,14 +61,12 @@ PanelWindow {
             Item { Layout.fillWidth: true }
 
             // Right section
-            RowLayout {
+            Row {
                 Layout.alignment: Qt.AlignRight
-                spacing: 6
+                spacing: 8
 
                 Widgets.SystemTray {}
-                Widgets.VolumePill {}
-                Widgets.BatteryPill {}
-                Widgets.Clock {}
+                Widgets.StatusPill {}
                 Widgets.PowerButton {}
             }
         }

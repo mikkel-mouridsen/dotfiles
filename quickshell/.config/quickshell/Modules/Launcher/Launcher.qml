@@ -92,7 +92,7 @@ PanelWindow {
                         Keys.onEscapePressed: Core.State.launcherOpen = false
                         Keys.onReturnPressed: {
                             if (filteredModel.count > 0) {
-                                filteredModel.get(listView.currentIndex ?? 0).entry.launch()
+                                filteredModel.get(listView.currentIndex ?? 0).entry.execute()
                                 Core.State.launcherOpen = false
                             }
                         }
@@ -136,7 +136,7 @@ PanelWindow {
                         spacing: 10
 
                         Image {
-                            source: entry.icon ?? ""
+                            source: entry.icon ? "file://" + Quickshell.iconPath(entry.icon) : ""
                             Layout.preferredWidth: 24
                             Layout.preferredHeight: 24
                             fillMode: Image.PreserveAspectFit
@@ -157,7 +157,7 @@ PanelWindow {
                         hoverEnabled: true
                         onEntered: listView.currentIndex = index
                         onClicked: {
-                            entry.launch()
+                            entry.execute()
                             Core.State.launcherOpen = false
                         }
                     }

@@ -12,7 +12,7 @@ Rectangle {
         text: Core.Icons.power
         color: powerArea.containsMouse ? Core.Colors.red : Core.Colors.subtext0
         font.family: "JetBrainsMono Nerd Font"
-        font.pixelSize: 16
+        font.pixelSize: 18
     }
 
     MouseArea {

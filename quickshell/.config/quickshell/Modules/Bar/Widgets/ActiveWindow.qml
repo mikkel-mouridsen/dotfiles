@@ -17,7 +17,7 @@ Item {
         text: activeWindow?.title ?? ""
         color: Core.Colors.subtext0
         font.family: "JetBrainsMono Nerd Font"
-        font.pixelSize: 13
+        font.pixelSize: 14
         elide: Text.ElideRight
         maximumLineCount: 1
     }

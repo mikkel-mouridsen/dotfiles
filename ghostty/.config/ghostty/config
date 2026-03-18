@@ -12,7 +12,7 @@ background-opacity = 0.95
 # ── Window ───────────────────────────────────────────────────────
 window-padding-x = 12
 window-padding-y = 8
-window-inherit-working-directory = true
+window-inherit-working-directory = false
 confirm-close-surface = false
 quit-after-last-window-closed = true
 resize-overlay = never

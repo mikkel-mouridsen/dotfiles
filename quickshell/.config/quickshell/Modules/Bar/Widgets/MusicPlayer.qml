@@ -1,29 +1,20 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Services.Mpris
 import "../../../Core" as Core
+import "../../../Services" as Services
 
 Item {
     id: musicWidget
-    visible: player != null
+    visible: Services.MprisService.title !== ""
     implicitWidth: visible ? musicRow.implicitWidth + 20 : 0
     implicitHeight: 32
-
-    property var player: {
-        // Prefer YouTube Music, fall back to any active player
-        for (let i = 0; i < Mpris.players.values.length; i++) {
-            let p = Mpris.players.values[i]
-            if (p.identity.toLowerCase().includes("youtube")) return p
-        }
-        return Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
-    }
 
     Rectangle {
         anchors.fill: parent
         color: Core.Colors.surface0
         radius: 10
         border.width: 1
-        border.color: player?.playbackStatus === MprisPlaybackStatus.Playing
+        border.color: Services.MprisService.playing
             ? Core.Colors.green : Core.Colors.glassBorder
 
         RowLayout {
@@ -31,86 +22,84 @@ Item {
             anchors.centerIn: parent
             spacing: 8
 
-            // Album art
-            Image {
-                source: player?.trackArtUrl ?? ""
-                Layout.preferredWidth: 22
-                Layout.preferredHeight: 22
-                fillMode: Image.PreserveAspectCrop
-                visible: source != ""
+            // Equalizer bars animation
+            Row {
+                spacing: 2
+                visible: Services.MprisService.playing
+                Layout.preferredWidth: 14
+                Layout.preferredHeight: 18
+                Layout.alignment: Qt.AlignVCenter
 
-                layer.enabled: true
-                layer.effect: Item {
-                    // Rounded mask via OpacityMask alternative
+                Repeater {
+                    model: 3
+                    Rectangle {
+                        required property int index
+                        width: 3
+                        height: 4
+                        radius: 1
+                        color: Core.Colors.green
+                        anchors.bottom: parent.bottom
+
+                        SequentialAnimation on height {
+                            loops: Animation.Infinite
+                            running: Services.MprisService.playing
+                            NumberAnimation {
+                                from: 4; to: 14
+                                duration: index === 0 ? 300 : index === 1 ? 400 : 500
+                                easing.type: Easing.InOutQuad
+                            }
+                            NumberAnimation {
+                                from: 14; to: 4
+                                duration: index === 0 ? 300 : index === 1 ? 400 : 500
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
                 }
             }
 
-            // Track info
+            // Album art
+            Rectangle {
+                Layout.preferredWidth: 22
+                Layout.preferredHeight: 22
+                radius: 4
+                color: Core.Colors.surface1
+                clip: true
+
+                Image {
+                    anchors.fill: parent
+                    source: Services.MprisService.artUrl
+                    fillMode: Image.PreserveAspectCrop
+                    visible: status === Image.Ready
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: Core.Icons.music_note
+                    color: Core.Colors.overlay0
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 12
+                    visible: albumArt.status !== Image.Ready
+
+                    property Item albumArt: parent.children[0]
+                }
+            }
+
+            // Track title
             Text {
-                text: player?.trackTitle ?? ""
+                text: Services.MprisService.title
                 color: Core.Colors.text
                 font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 12
                 elide: Text.ElideRight
                 Layout.maximumWidth: 180
             }
-
-            Text {
-                text: player?.trackArtists?.join(", ") ?? ""
-                color: Core.Colors.subtext0
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 11
-                elide: Text.ElideRight
-                Layout.maximumWidth: 120
-                visible: text !== ""
-            }
-
-            // Controls (visible on hover)
-            RowLayout {
-                spacing: 4
-                visible: musicArea.containsMouse
-
-                Text {
-                    text: Core.Icons.music_prev
-                    color: Core.Colors.subtext0
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 14
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: player?.previous()
-                    }
-                }
-
-                Text {
-                    text: player?.playbackStatus === MprisPlaybackStatus.Playing
-                        ? Core.Icons.music_pause : Core.Icons.music_play
-                    color: Core.Colors.accent
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 14
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: player?.togglePlaying()
-                    }
-                }
-
-                Text {
-                    text: Core.Icons.music_next
-                    color: Core.Colors.subtext0
-                    font.family: "JetBrainsMono Nerd Font"
-                    font.pixelSize: 14
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: player?.next()
-                    }
-                }
-            }
         }
     }
 
     MouseArea {
-        id: musicArea
         anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.NoButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Core.State.toggleMusicPlayer()
     }
 }
