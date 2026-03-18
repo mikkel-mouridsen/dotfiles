@@ -85,6 +85,7 @@ Choose "Fresh Install" to start with recommended defaults, or "Manage Existing" 
 These local override files are **not** tracked:
 
 - **`~/.gitconfig.local`** — `[user]` name/email
+- **`~/.config/hypr/local.conf`** — Hyprland overrides (monitor scaling, cursor size, etc.)
 - **`~/.config/network-storage/config.env`** — SMB server address, sync settings
 - **`~/.config/network-storage/.smbcredentials`** — SMB credentials
 
