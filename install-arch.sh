@@ -22,6 +22,7 @@ PACMAN_PKGS=(
 
   # Wayland / Hyprland
   hyprland xdg-desktop-portal-hyprland hyprlock hypridle
+  greetd greetd-regreet
   mako swww wl-clipboard grim slurp
   qt5-wayland qt6-wayland
 
@@ -139,7 +140,42 @@ mkdir -p "$HOME/.config/wallpapers"
 ok "Wallpaper dir created — add images to ~/.config/wallpapers/"
 mkdir -p "$HOME/Pictures/Screenshots"
 
-# ── 7. Run install.sh ────────────────────────────────────────────
+# ── 7. greetd (login greeter) ─────────────────────────────────────
+log "Configuring greetd + ReGreet login greeter…"
+GREETD_DIR="$DOTFILES_DIR/greetd/etc/greetd"
+
+# Copy greeter configs to /etc/greetd/
+sudo install -Dm644 "$GREETD_DIR/config.toml"   /etc/greetd/config.toml
+sudo install -Dm644 "$GREETD_DIR/hyprland.conf"  /etc/greetd/hyprland.conf
+sudo install -Dm644 "$GREETD_DIR/regreet.toml"   /etc/greetd/regreet.toml
+sudo install -Dm644 "$GREETD_DIR/regreet.css"    /etc/greetd/regreet.css
+ok "Greeter config files installed to /etc/greetd/"
+
+# Generate pre-blurred wallpaper for the greeter background
+WALLPAPER="$(find "$HOME/.config/wallpapers" -maxdepth 1 -type f \( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' \) | head -1)"
+if [[ -n "$WALLPAPER" ]]; then
+  log "Generating blurred greeter wallpaper from $WALLPAPER…"
+  convert "$WALLPAPER" -blur 0x24 -brightness-contrast -35 /tmp/greetd-wallpaper.jpg
+  sudo install -Dm644 /tmp/greetd-wallpaper.jpg /etc/greetd/wallpaper.jpg
+  rm -f /tmp/greetd-wallpaper.jpg
+  ok "Blurred wallpaper installed"
+else
+  warn "No wallpaper found in ~/.config/wallpapers/ — greeter will have no background"
+fi
+
+# Ensure greeter user can access config dir
+sudo chmod 755 /etc/greetd/
+
+# Disable SDDM (CachyOS default) if active, enable greetd
+if systemctl is-enabled sddm &>/dev/null; then
+  log "Disabling SDDM…"
+  sudo systemctl disable sddm
+  ok "SDDM disabled"
+fi
+sudo systemctl enable greetd
+ok "greetd enabled — will start on next boot"
+
+# ── 8. Run install.sh ────────────────────────────────────────────
 log "Running install.sh to stow all packages…"
 bash "$DOTFILES_DIR/install.sh"
 
@@ -156,10 +192,11 @@ else
 fi
 echo ""
 echo "Next steps:"
-echo "  1. Log out and back in (group changes, new shell)"
-echo "  2. Start Hyprland: exec Hyprland"
-echo "  3. Tmux: C-Space I  (install plugins)"
-echo "  4. Neovim: opens and auto-installs plugins via Lazy"
-echo "  5. Add wallpapers to ~/.config/wallpapers/"
-echo "  6. Set kanata device: echo '/dev/input/by-path/...' > ~/.config/kanata/device.local"
+echo "  1. Reboot — greetd login greeter will start automatically"
+echo "  2. Tmux: C-Space I  (install plugins)"
+echo "  3. Neovim: opens and auto-installs plugins via Lazy"
+echo "  4. Add wallpapers to ~/.config/wallpapers/"
+echo "  5. Set kanata device: echo '/dev/input/by-path/...' > ~/.config/kanata/device.local"
+echo ""
+echo "Greeter fallback: Ctrl+Alt+F2 → TTY login → sudo systemctl disable greetd"
 echo "════════════════════════════════════════════════════"
