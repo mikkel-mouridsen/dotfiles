@@ -315,6 +315,21 @@ systemctl --user enable --now kanata-laptop.service || true`,
         configFile: "~/.config/network-storage/config.env",
         configKey: "SMB_SERVER",
       },
+      {
+        label: "SMB username",
+        default: "guest",
+        configFile: "~/.config/network-storage/.smbcredentials",
+        configKey: "username",
+        createIfMissing: true,
+      },
+      {
+        label: "SMB password (leave blank for guest)",
+        default: "",
+        configFile: "~/.config/network-storage/.smbcredentials",
+        configKey: "password",
+        secret: true,
+        createIfMissing: true,
+      },
     ],
     postInstall: [
       {

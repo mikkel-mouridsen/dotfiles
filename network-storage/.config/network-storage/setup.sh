@@ -17,10 +17,12 @@ echo "━━━ Network Storage Setup ━━━"
 echo "Server: $SMB_SERVER"
 
 # ── Credentials ───────────────────────────────────────────────────
-if [[ -f "$CRED_FILE" ]]; then
-  echo "Using existing credentials at $CRED_FILE"
+if [[ -f "$CRED_FILE" ]] && grep -q "^username=" "$CRED_FILE"; then
+  SMB_USER=$(grep "^username=" "$CRED_FILE" | cut -d= -f2)
+  echo "Using credentials at $CRED_FILE (user: $SMB_USER)"
 else
-  # Default to guest access — edit ~/.config/network-storage/.smbcredentials for auth
+  # Default to guest access — the TUI installer prompts for credentials,
+  # or edit ~/.config/network-storage/.smbcredentials manually
   cat > "$CRED_FILE" <<EOF
 username=guest
 password=
@@ -28,6 +30,7 @@ EOF
   chmod 600 "$CRED_FILE"
   echo "Configured guest access (edit $CRED_FILE for authenticated access)"
 fi
+chmod 600 "$CRED_FILE"
 
 # ── Create mount directories ─────────────────────────────────────
 echo ""

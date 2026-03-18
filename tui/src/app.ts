@@ -394,11 +394,22 @@ export class App {
         if (match) currentValue = match[1];
       }
 
-      // Prompt user
-      const proc = Bun.spawnSync(
-        ["bash", "-c", `read -rp "  [${mod.name}] ${prompt.label} [${currentValue}]: " val; echo "$val"`],
-        { stdin: "inherit", stdout: "pipe", stderr: "inherit" },
-      );
+      // Prompt user — use read -s for secret fields to hide input
+      let proc;
+      if (prompt.secret) {
+        const displayDefault = currentValue ? "********" : "empty";
+        proc = Bun.spawnSync(
+          ["bash", "-c", `read -srp "  [${mod.name}] ${prompt.label} [${displayDefault}]: " val; echo "$val"`],
+          { stdin: "inherit", stdout: "pipe", stderr: "inherit" },
+        );
+        // Print newline after hidden input
+        console.log("");
+      } else {
+        proc = Bun.spawnSync(
+          ["bash", "-c", `read -rp "  [${mod.name}] ${prompt.label} [${currentValue}]: " val; echo "$val"`],
+          { stdin: "inherit", stdout: "pipe", stderr: "inherit" },
+        );
+      }
       const input = new TextDecoder().decode(proc.stdout).trim();
       const value = input || currentValue;
 
@@ -412,9 +423,19 @@ export class App {
           content += `\n${prompt.configKey}=${value}\n`;
         }
         writeFileSync(configPath, content);
+      } else if (prompt.createIfMissing) {
+        // Only create files that aren't managed by stow
+        const dir = configPath.substring(0, configPath.lastIndexOf("/"));
+        Bun.spawnSync(["mkdir", "-p", dir]);
+        writeFileSync(configPath, `${prompt.configKey}=${value}\n`, { mode: 0o600 });
       }
 
-      console.log(`  → ${prompt.configKey}=${value}`);
+      // Display confirmation (mask secrets)
+      if (prompt.secret) {
+        console.log(`  → ${prompt.configKey}=${value ? "********" : "(empty)"}`);
+      } else {
+        console.log(`  → ${prompt.configKey}=${value}`);
+      }
     }
 
     console.log("");

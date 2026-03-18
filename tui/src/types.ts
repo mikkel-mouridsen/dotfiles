@@ -29,8 +29,10 @@ export interface PostInstallHook {
 export interface ConfigPrompt {
   label: string;
   default: string;
-  configFile: string; // e.g. "~/.config/network-storage/config.env"
-  configKey: string;  // e.g. "SMB_SERVER"
+  configFile: string;      // e.g. "~/.config/network-storage/config.env"
+  configKey: string;       // e.g. "SMB_SERVER"
+  secret?: boolean;        // hide input (for passwords)
+  createIfMissing?: boolean; // create file if it doesn't exist (don't use for stow-managed files)
 }
 
 export interface DotfilesModule {
