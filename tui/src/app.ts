@@ -91,6 +91,7 @@ export class App {
       exitOnCtrlC: true,
       useAlternateScreen: true,
       backgroundColor: "#1e1e2e",
+      useKittyKeyboard: null,
     });
 
     this.renderer.keyInput.on("keypress", (key: KeyEvent) => this.handleKey(key));
@@ -345,6 +346,7 @@ export class App {
       exitOnCtrlC: true,
       useAlternateScreen: true,
       backgroundColor: "#1e1e2e",
+      useKittyKeyboard: null,
     });
     this.renderer.keyInput.on("keypress", (key: KeyEvent) => this.handleKey(key));
   }
