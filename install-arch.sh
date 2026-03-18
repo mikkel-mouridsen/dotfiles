@@ -30,7 +30,7 @@ PACMAN_PKGS=(
   qt6-declarative qt6-wayland imagemagick
 
   # System utils
-  stow git lazygit yazi fastfetch brightnessctl
+  stow git lazygit yazi fastfetch brightnessctl tailscale
 
   # Fonts
   noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols
@@ -60,6 +60,8 @@ AUR_PKGS=(
   quickshell-git             # Quickshell — QML-based desktop shell for Wayland
   kanata-bin                 # keyboard remapper (pre-built binary, faster than kanata)
   catppuccin-gtk-theme-mocha # Catppuccin Mocha GTK theme (used by greetd greeter)
+  vesktop-bin                # Discord client with Vencord built-in
+  tsui                       # Tailscale TUI by Neuralink
 )
 
 $AUR_HELPER -S --needed --noconfirm "${AUR_PKGS[@]}" || warn "Some AUR packages failed — check output above"
@@ -107,7 +109,12 @@ else
   ok "kanata-laptop.service already exists"
 fi
 
-# ── 4. fisher (fish plugin manager) ──────────────────────────────
+# ── 4. tailscaled ──────────────────────────────────────────────────
+log "Enabling tailscaled service…"
+sudo systemctl enable --now tailscaled || warn "tailscaled failed to start"
+ok "tailscaled enabled — run 'sudo tailscale up' to authenticate"
+
+# ── 5. fisher (fish plugin manager) ──────────────────────────────
 log "Bootstrapping fish + fisher…"
 if command -v fish &>/dev/null; then
   fish -c "
@@ -122,7 +129,7 @@ else
   warn "fish not found — skipping fisher bootstrap"
 fi
 
-# ── 5. chsh to fish ─────────────────────────────────────────────
+# ── 6. chsh to fish ─────────────────────────────────────────────
 log "Setting default shell to fish…"
 FISH_PATH="$(command -v fish)"
 if ! grep -q "$FISH_PATH" /etc/shells 2>/dev/null; then
@@ -135,13 +142,13 @@ else
   ok "fish is already the default shell"
 fi
 
-# ── 6. Wallpaper + screenshots dirs ──────────────────────────────
+# ── 7. Wallpaper + screenshots dirs ──────────────────────────────
 log "Creating wallpaper directory…"
 mkdir -p "$HOME/.config/wallpapers"
 ok "Wallpaper dir created — add images to ~/.config/wallpapers/"
 mkdir -p "$HOME/Pictures/Screenshots"
 
-# ── 7. greetd (login greeter) ─────────────────────────────────────
+# ── 8. greetd (login greeter) ─────────────────────────────────────
 log "Configuring greetd + ReGreet login greeter…"
 GREETD_DIR="$DOTFILES_DIR/greetd/etc/greetd"
 
@@ -176,7 +183,7 @@ fi
 sudo systemctl enable greetd
 ok "greetd enabled — will start on next boot"
 
-# ── 8. Run install.sh ────────────────────────────────────────────
+# ── 9. Run install.sh ────────────────────────────────────────────
 log "Running install.sh to stow all packages…"
 bash "$DOTFILES_DIR/install.sh"
 

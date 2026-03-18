@@ -192,6 +192,10 @@ PanelWindow {
                     Layout.fillWidth: true
                 }
 
+                Sections.TailscaleSection {
+                    Layout.fillWidth: true
+                }
+
                 Sections.NotificationsSection {
                     Layout.fillWidth: true
                 }

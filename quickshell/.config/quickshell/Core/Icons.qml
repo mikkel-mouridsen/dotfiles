@@ -45,6 +45,8 @@ QtObject {
     readonly property string notification: "\uf0a2"
     readonly property string clear_all: "\uf12d"
     readonly property string wallpaper: "\uf03e"
+    readonly property string vpn: "\uf982"
+    readonly property string vpn_off: "\uf983"
 
     function batteryIcon(percent, charging) {
         if (charging) return battery_charging

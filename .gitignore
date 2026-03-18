@@ -2,3 +2,5 @@
 lazy-lock.json
 *.zwc
 .zcompdump*
+node_modules/
+bun.lock

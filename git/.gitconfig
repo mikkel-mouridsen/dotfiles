@@ -57,3 +57,6 @@
     excludesfile = ~/.config/git/ignore
 [include]
     path = ~/.gitconfig.local
+[user]
+	email = claude@anthropic.com
+	name = Claude

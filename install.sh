@@ -3,7 +3,7 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 PACKAGES=(nvim tmux ghostty starship bat git neofetch zsh claude gh-dash \
-          fish hyprland quickshell mako kanata hyprlock hypridle)
+          fish hyprland quickshell mako kanata hyprlock hypridle vesktop)
 
 echo "=== Dotfiles Setup ==="
 echo ""
@@ -74,6 +74,9 @@ CONFLICTS=(
   # GTK theme
   ~/.config/gtk-3.0/settings.ini
   ~/.config/gtk-4.0/settings.ini
+  # Vesktop (Discord)
+  ~/.config/vesktop/themes/catppuccin-mocha.theme.css
+  ~/.config/vesktop/settings/settings.json
 )
 for f in "${CONFLICTS[@]}"; do
   # Skip files that already resolve into the dotfiles repo (already stowed)
@@ -98,6 +101,7 @@ fi
 mkdir -p ~/.config/{tmux,ghostty,bat/themes,git,neofetch,gh-dash}
 mkdir -p ~/.config/{hypr,fish/conf.d,fish/functions,quickshell,mako,kanata}
 mkdir -p ~/.config/{gtk-3.0,gtk-4.0}
+mkdir -p ~/.config/vesktop/{themes,settings}
 mkdir -p ~/.config/systemd/user
 mkdir -p ~/.claude/{hooks,skills}
 

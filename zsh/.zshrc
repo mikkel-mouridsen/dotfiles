@@ -88,3 +88,10 @@ eval "$(zoxide init zsh)"
 
 # ── Machine-specific overrides ───────────────────────────────────
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# bun completions
+[ -s "/home/cobo/.bun/_bun" ] && source "/home/cobo/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
