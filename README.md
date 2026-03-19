@@ -89,12 +89,3 @@ These local override files are **not** tracked:
 - **`~/.config/network-storage/config.env`** — SMB server address, sync settings
 - **`~/.config/network-storage/.smbcredentials`** — SMB credentials
 
-## Manual Stow Commands
-
-```bash
-cd ~/dotfiles
-
-stow <package>        # Create symlinks
-stow -D <package>     # Remove symlinks
-stow -R <package>     # Re-stow (after adding files)
-```

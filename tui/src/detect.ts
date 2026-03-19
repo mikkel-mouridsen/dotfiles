@@ -60,7 +60,7 @@ export function detectDotfilesDir(): string {
   ];
 
   for (const dir of candidates) {
-    if (dir && existsSync(`${dir}/install.sh`)) return dir;
+    if (dir && existsSync(`${dir}/tui/index.ts`)) return dir;
   }
 
   // Fall back to parent of tui directory
