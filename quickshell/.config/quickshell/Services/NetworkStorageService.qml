@@ -60,14 +60,14 @@ Scope {
     Process {
         id: statusProc
         command: ["bash", "-c",
-            "docs=$(systemctl is-active mnt-network\\\\x2dstorage-documents.mount 2>/dev/null || echo inactive); " +
-            "media=$(systemctl is-active mnt-network\\\\x2dstorage-media.mount 2>/dev/null || echo inactive); " +
-            "timer=$(systemctl --user is-active network-storage-sync.timer 2>/dev/null || echo inactive); " +
-            "last=$(systemctl --user show network-storage-sync.timer -p LastTriggerUSec --value 2>/dev/null || echo never); " +
+            "docs=$(systemctl is-active mnt-network\\\\x2dstorage-documents.mount 2>/dev/null) || true; " +
+            "media=$(systemctl is-active mnt-network\\\\x2dstorage-media.mount 2>/dev/null) || true; " +
+            "timer=$(systemctl --user is-active network-storage-sync.timer 2>/dev/null) || true; " +
+            "last=$(systemctl --user show network-storage-sync.timer -p LastTriggerUSec --value 2>/dev/null) || true; " +
             "ping -c1 -W2 " + serverName + " &>/dev/null && reach=true || reach=false; " +
-            "syncing=$(systemctl --user is-active network-storage-sync.service 2>/dev/null || echo inactive); " +
+            "syncing=$(systemctl --user is-active network-storage-sync.service 2>/dev/null) || true; " +
             "printf '{\"docs\":\"%s\",\"media\":\"%s\",\"timer\":\"%s\",\"lastSync\":\"%s\",\"reachable\":%s,\"syncing\":\"%s\"}\\n' " +
-            "\"$docs\" \"$media\" \"$timer\" \"$last\" \"$reach\" \"$syncing\""
+            "\"${docs:-inactive}\" \"${media:-inactive}\" \"${timer:-inactive}\" \"${last:-never}\" \"$reach\" \"${syncing:-inactive}\""
         ]
 
         stdout: SplitParser {
