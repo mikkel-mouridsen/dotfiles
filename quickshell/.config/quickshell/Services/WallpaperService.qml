@@ -6,6 +6,7 @@ import Quickshell.Io
 Scope {
     property string currentWallpaper: ""
     property ListModel wallpapers: ListModel {}
+    property bool hasMatugen: false
 
     function refresh() {
         scanProc.running = true
@@ -13,11 +14,28 @@ Scope {
 
     function setWallpaper(path) {
         currentWallpaper = path
-        applyProc.command = ["swww", "img", path,
+        console.log("[WallpaperService] setWallpaper:", path, "hasMatugen:", hasMatugen)
+        // Always set wallpaper via swww first
+        swwwProc.command = ["swww", "img", path,
             "--transition-type", "center",
             "--transition-duration", "1",
             "--transition-fps", "60"]
-        applyProc.running = true
+        swwwProc.running = true
+        // Then generate theme if matugen is available
+        if (hasMatugen) {
+            console.log("[WallpaperService] Running matugen...")
+            matugenProc.command = ["matugen", "image", "--source-color-index", "0", path]
+            matugenProc.running = true
+        }
+    }
+
+    Process {
+        id: matugenCheck
+        command: ["which", "matugen"]
+        onExited: (exitCode, exitStatus) => {
+            hasMatugen = exitCode === 0
+            console.log("[WallpaperService] matugen check:", exitCode, "hasMatugen:", hasMatugen)
+        }
     }
 
     Process {
@@ -38,7 +56,25 @@ Scope {
     }
 
     Process {
-        id: applyProc
+        id: swwwProc
+    }
+
+    Process {
+        id: matugenProc
+        onExited: (exitCode, exitStatus) => {
+            console.log("[WallpaperService] matugen exited:", exitCode)
+            if (exitCode === 0) {
+                restartProc.running = true
+            }
+        }
+    }
+
+    Process {
+        id: restartProc
+        command: ["sh", "-c", "quickshell -d 2>/dev/null && sleep 0.3 && quickshell kill 2>/dev/null; true"]
+        onExited: (exitCode, exitStatus) => {
+            console.log("[WallpaperService] restart exited:", exitCode)
+        }
     }
 
     Process {
@@ -53,6 +89,7 @@ Scope {
     }
 
     Component.onCompleted: {
+        matugenCheck.running = true
         queryProc.running = true
         refresh()
     }

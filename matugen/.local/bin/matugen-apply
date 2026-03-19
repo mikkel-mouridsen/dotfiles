@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# matugen-apply — Apply matugen theme from current or specified wallpaper
+set -euo pipefail
+
+WALLPAPER="${1:-}"
+
+if [ -z "$WALLPAPER" ]; then
+    WALLPAPER="$(swww query 2>/dev/null | head -1 | grep -oP 'image: \K.*' || true)"
+fi
+
+if [ -z "$WALLPAPER" ]; then
+    WALLPAPER="$(find ~/.config/wallpapers -maxdepth 1 -type f \( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' -o -name '*.webp' \) | head -1)"
+fi
+
+if [ -z "$WALLPAPER" ]; then
+    echo "No wallpaper found. Usage: matugen-apply [path-to-image]"
+    exit 1
+fi
+
+echo "Applying theme from: $WALLPAPER"
+matugen image --source-color-index 0 "$WALLPAPER"

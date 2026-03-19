@@ -1,0 +1,126 @@
+palette = "matugen"
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$git_metrics\
+$c\
+$python\
+$nodejs\
+$rust\
+$golang\
+$java\
+$cmake\
+$aws\
+$jobs\
+$fill\
+$cmd_duration\
+$time\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[❯](lavender)"
+error_symbol = "[❯](red)"
+
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = " "
+style = "bold mauve"
+
+[git_status]
+style = "bold maroon"
+format = '([$all_status$ahead_behind]($style) )'
+
+[cmd_duration]
+min_time = 2000
+style = "bold yellow"
+format = "[$duration]($style) "
+
+[fill]
+symbol = " "
+
+[c]
+symbol = " "
+detect_extensions = ["c", "cpp", "h", "hpp"]
+style = "bold blue"
+
+[python]
+symbol = " "
+style = "bold yellow"
+
+[nodejs]
+symbol = " "
+style = "bold green"
+
+[rust]
+symbol = "🦀 "
+style = "bold peach"
+
+[golang]
+symbol = " "
+style = "bold teal"
+
+[java]
+symbol = " "
+style = "bold red"
+
+[aws]
+force_display = true
+format = 'on [$symbol$profile]($style) '
+style = "bold blue"
+symbol = "☁️ "
+
+[git_metrics]
+disabled = false
+format = '([+$added]($added_style) )([-$deleted]($deleted_style) )'
+added_style = "bold green"
+deleted_style = "bold red"
+
+[jobs]
+symbol = "󰜎 "
+style = "bold peach"
+threshold = 1
+
+[time]
+disabled = false
+format = "[$time]($style)"
+style = "overlay1"
+time_format = "%H:%M"
+
+[cmake]
+symbol = "△ "
+style = "bold blue"
+
+[palettes.matugen]
+rosewater = "{{colors.tertiary_fixed_dim.default.hex}}"
+flamingo = "{{colors.tertiary_fixed.default.hex}}"
+pink = "{{colors.tertiary.default.hex}}"
+mauve = "{{colors.primary.default.hex}}"
+red = "{{colors.error.default.hex}}"
+maroon = "{{colors.error_container.default.hex}}"
+peach = "{{colors.tertiary.default.hex}}"
+yellow = "{{colors.tertiary_container.default.hex}}"
+green = "{{colors.tertiary.default.hex}}"
+teal = "{{colors.secondary_container.default.hex}}"
+sky = "{{colors.secondary.default.hex}}"
+sapphire = "{{colors.secondary.default.hex}}"
+blue = "{{colors.primary.default.hex}}"
+lavender = "{{colors.secondary_fixed.default.hex}}"
+text = "{{colors.on_surface.default.hex}}"
+subtext1 = "{{colors.on_surface_variant.default.hex}}"
+subtext0 = "{{colors.on_surface_variant.default.hex}}"
+overlay2 = "{{colors.outline.default.hex}}"
+overlay1 = "{{colors.outline.default.hex}}"
+overlay0 = "{{colors.outline_variant.default.hex}}"
+surface2 = "{{colors.surface_container_highest.default.hex}}"
+surface1 = "{{colors.surface_container_high.default.hex}}"
+surface0 = "{{colors.surface_container.default.hex}}"
+base = "{{colors.background.default.hex}}"
+mantle = "{{colors.surface_container_lowest.default.hex}}"
+crust = "{{colors.surface_dim.default.hex}}"

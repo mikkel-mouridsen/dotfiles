@@ -60,19 +60,6 @@ PanelWindow {
         onClicked: Core.State.utilitiesPickerOpen = false
     }
 
-    // Gradient border
-    Rectangle {
-        anchors.centerIn: panel
-        width: panel.width + 4
-        height: panel.height + 4
-        radius: 22
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(0.796, 0.651, 0.969, 0.67) }
-            GradientStop { position: 1.0; color: Qt.rgba(0.706, 0.745, 0.996, 0.67) }
-        }
-    }
-
     Item {
         id: panel
         anchors.centerIn: parent
@@ -159,6 +146,15 @@ PanelWindow {
             anchors.fill: content
             source: content
             maskSource: mask
+        }
+
+        // Border overlay
+        Rectangle {
+            anchors.fill: parent
+            radius: 20
+            color: "transparent"
+            border.width: 1
+            border.color: Core.Colors.glassBorder
         }
 
         // Grid content (interactive, on top)

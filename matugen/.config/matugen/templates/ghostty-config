@@ -1,0 +1,45 @@
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+font-feature = calt
+font-feature = liga
+adjust-cell-height = 20%
+
+background = {{colors.surface_container.default.hex}}
+foreground = {{colors.on_surface.default.hex}}
+cursor-color = {{colors.primary.default.hex}}
+selection-background = {{colors.secondary_container.default.hex}}
+selection-foreground = {{colors.on_secondary_container.default.hex}}
+
+palette = 0={{colors.surface.default.hex}}
+palette = 1={{colors.error.default.hex}}
+palette = 2={{colors.tertiary.default.hex}}
+palette = 3={{colors.tertiary_container.default.hex}}
+palette = 4={{colors.primary.default.hex}}
+palette = 5={{colors.secondary.default.hex}}
+palette = 6={{colors.secondary_container.default.hex}}
+palette = 7={{colors.on_surface.default.hex}}
+palette = 8={{colors.outline.default.hex}}
+palette = 9={{colors.error_container.default.hex}}
+palette = 10={{colors.tertiary_fixed.default.hex}}
+palette = 11={{colors.tertiary_fixed_dim.default.hex}}
+palette = 12={{colors.primary_container.default.hex}}
+palette = 13={{colors.secondary_fixed.default.hex}}
+palette = 14={{colors.secondary_fixed_dim.default.hex}}
+palette = 15={{colors.on_surface.default.hex}}
+
+background-opacity = 0.95
+
+window-padding-x = 12
+window-padding-y = 8
+window-inherit-working-directory = false
+confirm-close-surface = false
+quit-after-last-window-closed = true
+resize-overlay = never
+macos-titlebar-style = transparent
+
+cursor-style = bar
+cursor-style-blink = false
+
+scrollback-limit = 4294967295
+quick-terminal-animation-duration = 1
+copy-on-select = clipboard

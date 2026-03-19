@@ -158,6 +158,38 @@ export const modules: DotfilesModule[] = [
     },
     dirs: ["~/.config/bat/themes"],
   },
+  {
+    id: "matugen",
+    name: "Matugen",
+    description: "Material You dynamic theming — auto-theme everything from wallpaper colors",
+    category: "appearance",
+    core: false,
+    stowPackages: ["matugen"],
+    systemPackages: {
+      pacman: ["matugen"],
+    },
+    dependencies: ["hyprland"],
+    onlyOn: ["arch"],
+    dirs: ["~/.config/matugen", "~/.config/matugen/templates"],
+    postInstall: [
+      {
+        description: "Remove stowed symlinks for matugen-managed configs",
+        command: `for f in ~/.config/hypr/colors.conf ~/.config/quickshell/Core/Colors.qml ~/.config/mako/config ~/.config/hypr/hyprlock.conf ~/.config/ghostty/config ~/.config/fish/conf.d/theme.fish ~/.config/starship.toml; do [ -L "$f" ] && rm "$f"; done; true`,
+        onlyOn: ["arch"],
+      },
+      {
+        description: "Generate initial theme from current wallpaper",
+        command: `WALLPAPER="$(swww query 2>/dev/null | head -1 | grep -oP 'image: \\K.*' || true)" && [ -z "$WALLPAPER" ] && WALLPAPER="$(find ~/.config/wallpapers -maxdepth 1 -type f \\( -name '*.jpg' -o -name '*.png' -o -name '*.jpeg' -o -name '*.webp' \\) | head -1)" && [ -n "$WALLPAPER" ] && matugen image --source-color-index 0 "$WALLPAPER" || echo "No wallpaper found — run 'matugen image <path>' after adding wallpapers"`,
+        onlyOn: ["arch"],
+      },
+    ],
+    manualSteps: [
+      "Change wallpaper via picker (ALT+W) to regenerate all colors",
+      "Running nvim instances update live via SIGUSR1",
+      "Run 'tmux source-file ~/.config/tmux/tmux.conf' to update active tmux sessions",
+      "To revert: uninstall matugen module, then re-stow affected packages",
+    ],
+  },
 
   // ─── Dev Tools ───────────────────────────────────────────────
   {

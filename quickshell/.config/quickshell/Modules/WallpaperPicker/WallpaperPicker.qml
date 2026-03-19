@@ -54,19 +54,6 @@ PanelWindow {
         onClicked: Core.State.wallpaperPickerOpen = false
     }
 
-    // Gradient border (mauve → lavender like Hyprland active border)
-    Rectangle {
-        anchors.centerIn: panel
-        width: panel.width + 4
-        height: panel.height + 4
-        radius: 22
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(0.796, 0.651, 0.969, 0.67) }
-            GradientStop { position: 1.0; color: Qt.rgba(0.706, 0.745, 0.996, 0.67) }
-        }
-    }
-
     // Single unified card
     Item {
         id: panel
@@ -143,6 +130,15 @@ PanelWindow {
             anchors.fill: content
             source: content
             maskSource: mask
+        }
+
+        // Border overlay
+        Rectangle {
+            anchors.fill: parent
+            radius: 20
+            color: "transparent"
+            border.width: 1
+            border.color: Core.Colors.glassBorder
         }
 
         // Block backdrop clicks on the card area

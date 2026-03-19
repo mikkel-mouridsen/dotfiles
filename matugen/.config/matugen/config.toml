@@ -1,0 +1,57 @@
+[config]
+color_scheme = "dark"
+source_color_index = 0
+
+[config.wallpaper]
+command = "true"
+set = false
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/hyprland-colors.conf"
+output_path = "~/.config/hypr/colors.conf"
+post_hook = "hyprctl reload"
+
+[templates.quickshell]
+input_path = "~/.config/matugen/templates/quickshell-colors.qml"
+output_path = "~/.config/quickshell/Core/Colors.qml"
+
+[templates.mako]
+input_path = "~/.config/matugen/templates/mako-config"
+output_path = "~/.config/mako/config"
+post_hook = "makoctl reload 2>/dev/null || true"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock.conf"
+output_path = "~/.config/hypr/hyprlock.conf"
+
+[templates.ghostty]
+input_path = "~/.config/matugen/templates/ghostty-config"
+output_path = "~/.config/ghostty/config"
+post_hook = "hyprctl dispatch sendshortcut 'CTRL_SHIFT, comma, class:com.mitchellh.ghostty' 2>/dev/null || true"
+
+[templates.fish]
+input_path = "~/.config/matugen/templates/fish-theme.fish"
+output_path = "~/.config/fish/conf.d/theme.fish"
+
+[templates.starship]
+input_path = "~/.config/matugen/templates/starship.toml"
+output_path = "~/.config/starship.toml"
+
+[templates.vesktop]
+input_path = "~/.config/matugen/templates/vesktop-theme.css"
+output_path = "~/.config/vesktop/themes/matugen.theme.css"
+
+[templates.nvim]
+input_path = "~/.config/matugen/templates/nvim-theme.lua"
+output_path = "~/.config/nvim/lua/matugen-generated.lua"
+post_hook = "pkill -SIGUSR1 nvim 2>/dev/null || true"
+
+[templates.tmux]
+input_path = "~/.config/matugen/templates/tmux-theme.conf"
+output_path = "~/.config/tmux/matugen-theme.conf"
+post_hook = "tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true"
+
+[templates.bat]
+input_path = "~/.config/matugen/templates/bat-theme.tmTheme"
+output_path = "~/.config/bat/themes/Matugen.tmTheme"
+post_hook = "bat cache --build 2>/dev/null || true"

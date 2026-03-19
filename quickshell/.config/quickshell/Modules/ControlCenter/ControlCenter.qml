@@ -28,28 +28,13 @@ PanelWindow {
     visible: Core.State.controlCenterOpen
     color: "transparent"
 
-    mask: Region { item: borderGlow }
+    mask: Region { item: borderOverlay }
 
     function close() { Core.State.controlCenterOpen = false }
 
     Shortcut {
         sequence: "Escape"
         onActivated: popup.close()
-    }
-
-    // Gradient border (mauve → lavender)
-    Rectangle {
-        id: borderGlow
-        width: panel.width + 4
-        height: panel.height + 4
-        anchors.horizontalCenter: panel.horizontalCenter
-        anchors.verticalCenter: panel.verticalCenter
-        radius: 18
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(0.796, 0.651, 0.969, 0.67) }
-            GradientStop { position: 1.0; color: Qt.rgba(0.706, 0.745, 0.996, 0.67) }
-        }
     }
 
     Item {
@@ -129,6 +114,16 @@ PanelWindow {
             anchors.fill: visualContent
             source: visualContent
             maskSource: mask
+        }
+
+        // Border overlay
+        Rectangle {
+            id: borderOverlay
+            anchors.fill: parent
+            radius: 16
+            color: "transparent"
+            border.width: 1
+            border.color: Core.Colors.glassBorder
         }
 
         // Close button (interactive, over hero)

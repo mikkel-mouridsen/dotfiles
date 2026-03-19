@@ -25,7 +25,7 @@ PanelWindow {
     visible: Core.State.musicPlayerOpen
     color: "transparent"
 
-    mask: Region { item: borderGlow }
+    mask: Region { item: borderOverlay }
 
     property int heroHeight: 160
 
@@ -60,20 +60,6 @@ PanelWindow {
     Shortcut {
         sequence: "Escape"
         onActivated: popup.close()
-    }
-
-    // Gradient border (mauve → lavender)
-    Rectangle {
-        id: borderGlow
-        anchors.centerIn: panel
-        width: panel.width + 4
-        height: panel.height + 4
-        radius: 18
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(0.796, 0.651, 0.969, 0.67) }
-            GradientStop { position: 1.0; color: Qt.rgba(0.706, 0.745, 0.996, 0.67) }
-        }
     }
 
     // Single unified card
@@ -174,6 +160,16 @@ PanelWindow {
             anchors.fill: visualContent
             source: visualContent
             maskSource: mask
+        }
+
+        // Border overlay
+        Rectangle {
+            id: borderOverlay
+            anchors.fill: parent
+            radius: 16
+            color: "transparent"
+            border.width: 1
+            border.color: Core.Colors.glassBorder
         }
 
         // Block pass-through clicks
