@@ -9,6 +9,8 @@ Item {
     property string icon: ""
     property bool expanded: false
     property string rightText: ""
+    property string actionIcon: ""
+    signal actionClicked()
     default property alias content: contentContainer.data
 
     implicitWidth: parent?.width ?? 300
@@ -53,6 +55,28 @@ Item {
                 font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 11
                 visible: text !== ""
+            }
+
+            Text {
+                text: root.actionIcon
+                color: actionArea.containsMouse ? Core.Colors.accent : Core.Colors.overlay0
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 13
+                visible: root.actionIcon !== ""
+
+                Behavior on color { ColorAnimation { duration: Core.Animations.durationFast } }
+
+                MouseArea {
+                    id: actionArea
+                    anchors.fill: parent
+                    anchors.margins: -4
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: function(event) {
+                        event.accepted = true
+                        root.actionClicked()
+                    }
+                }
             }
 
             Text {

@@ -196,6 +196,10 @@ PanelWindow {
                     Layout.fillWidth: true
                 }
 
+                Sections.NetworkStorageSection {
+                    Layout.fillWidth: true
+                }
+
                 Sections.NotificationsSection {
                     Layout.fillWidth: true
                 }

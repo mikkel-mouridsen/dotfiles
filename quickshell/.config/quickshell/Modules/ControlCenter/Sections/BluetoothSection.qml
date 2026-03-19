@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
+import Quickshell.Hyprland
 import "../../../Core" as Core
 import "../../../Services" as Services
 import "../Components" as Components
@@ -8,6 +9,11 @@ import "../Components" as Components
 Components.CollapsibleSection {
     title: "Bluetooth"
     icon: Services.BluetoothService.enabled ? Core.Icons.bluetooth : Core.Icons.bluetooth_off
+    actionIcon: Core.Icons.terminal
+    onActionClicked: {
+        Hyprland.dispatch("exec [float;size 900 600;center] ghostty -e bluetui")
+        Core.State.controlCenterOpen = false
+    }
     rightText: Services.BluetoothService.connectedCount > 0
         ? Services.BluetoothService.connectedCount + " connected" : ""
     expanded: false

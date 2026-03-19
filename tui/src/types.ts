@@ -65,7 +65,7 @@ export interface DotfilesState {
   dotfilesDir: string;
 }
 
-export type Screen = "welcome" | "categories" | "confirm" | "progress" | "complete";
+export type Screen = "welcome" | "categories" | "confirm" | "progress" | "complete" | "nas-monitor";
 
 export type InstallMode = "fresh" | "manage";
 

@@ -21,12 +21,12 @@ function AsciiTitle() {
   );
 }
 
-export function WelcomeScreen(state: AppState, focusIndex: number) {
+export function WelcomeScreen(state: AppState, focusIndex: number, nasInstalled: boolean = false) {
   const distroName = getDistroName(state.distro);
   const installedCount = state.installedModules.size;
   const totalCount = state.availableModules.length;
 
-  const options = [
+  const options: { label: string; description: string; icon: string }[] = [
     {
       label: "Fresh Install",
       description: "Select modules to install on a new system",
@@ -38,6 +38,14 @@ export function WelcomeScreen(state: AppState, focusIndex: number) {
       icon: "\u2699",
     },
   ];
+
+  if (nasInstalled) {
+    options.push({
+      label: "NAS Monitor",
+      description: "Monitor network storage mounts and sync status",
+      icon: "\uf0a0",
+    });
+  }
 
   const optionElements = options.map((opt, i) => {
     const isFocused = i === focusIndex;

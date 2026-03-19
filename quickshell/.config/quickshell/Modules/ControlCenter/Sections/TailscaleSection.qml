@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Hyprland
 import "../../../Core" as Core
 import "../../../Services" as Services
 import "../Components" as Components
@@ -9,6 +10,11 @@ Components.CollapsibleSection {
     title: "Tailscale"
     icon: Services.TailscaleService.running ? Core.Icons.vpn : Core.Icons.vpn_off
     rightText: Services.TailscaleService.running ? Services.TailscaleService.currentIP : ""
+    actionIcon: Core.Icons.terminal
+    onActionClicked: {
+        Hyprland.dispatch("exec [float;size 900 600;center] ghostty -e tsui")
+        Core.State.controlCenterOpen = false
+    }
     expanded: false
 
     // Enable polling only when expanded and control center is open

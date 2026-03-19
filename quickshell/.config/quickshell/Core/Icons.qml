@@ -47,6 +47,9 @@ QtObject {
     readonly property string wallpaper: "\uf03e"
     readonly property string vpn: "\uf982"
     readonly property string vpn_off: "\uf983"
+    readonly property string nas: "\uf0a0"
+    readonly property string sync_icon: "\uf021"
+    readonly property string terminal: "\uf120"
 
     function batteryIcon(percent, charging) {
         if (charging) return battery_charging

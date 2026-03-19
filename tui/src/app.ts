@@ -11,6 +11,8 @@ import { CategoriesScreen } from "./screens/categories";
 import { ConfirmScreen } from "./screens/confirm";
 import { ProgressScreen } from "./screens/progress";
 import { CompleteScreen } from "./screens/complete";
+import { NasMonitorScreen } from "./screens/nas-monitor";
+import { getNasStatus, remountShare, triggerSync, type NasStatus } from "./services/nas-status";
 
 export class App {
   private state: AppState;
@@ -25,6 +27,12 @@ export class App {
   private confirmFocus = 0;
   private completeFocus = 0;
   private pane: "categories" | "modules" = "modules";
+
+  // NAS monitor state
+  private nasInstalled = false;
+  private nasStatus: NasStatus | null = null;
+  private nasActionMessage: string | null = null;
+  private nasRefreshInterval: ReturnType<typeof setInterval> | null = null;
 
   // Progress state
   private executionLog: string[] = [];
@@ -71,6 +79,8 @@ export class App {
       }
     }
 
+    this.nasInstalled = installedModules.has("network-storage");
+
     this.state = {
       screen: "welcome",
       mode: "fresh",
@@ -104,7 +114,7 @@ export class App {
     let vnode;
     switch (this.state.screen) {
       case "welcome":
-        vnode = WelcomeScreen(this.state, this.welcomeFocus);
+        vnode = WelcomeScreen(this.state, this.welcomeFocus, this.nasInstalled);
         break;
       case "categories":
         vnode = CategoriesScreen(
@@ -134,6 +144,9 @@ export class App {
         break;
       case "complete":
         vnode = CompleteScreen(this.executionResults, this.completeFocus);
+        break;
+      case "nas-monitor":
+        vnode = NasMonitorScreen(this.nasStatus, this.nasActionMessage);
         break;
     }
 
@@ -169,17 +182,26 @@ export class App {
       case "complete":
         this.handleCompleteKey(key);
         break;
+      case "nas-monitor":
+        this.handleNasMonitorKey(key);
+        break;
     }
 
     this.render();
   }
 
   private handleWelcomeKey(key: KeyEvent): void {
+    const maxFocus = this.nasInstalled ? 2 : 1;
     if (key.name === "j" || key.name === "down") {
-      this.welcomeFocus = Math.min(1, this.welcomeFocus + 1);
+      this.welcomeFocus = Math.min(maxFocus, this.welcomeFocus + 1);
     } else if (key.name === "k" || key.name === "up") {
       this.welcomeFocus = Math.max(0, this.welcomeFocus - 1);
     } else if (key.name === "return") {
+      if (this.welcomeFocus === 2 && this.nasInstalled) {
+        this.enterNasMonitor();
+        return;
+      }
+
       this.state.mode = this.welcomeFocus === 0 ? "fresh" : "manage";
 
       if (this.state.mode === "fresh") {
@@ -268,6 +290,62 @@ export class App {
       } else if (hasFailures) {
         this.startExecution(true);
       }
+    }
+  }
+
+  private enterNasMonitor(): void {
+    this.nasStatus = null;
+    this.nasActionMessage = null;
+    this.state.screen = "nas-monitor";
+    this.refreshNasStatus();
+    this.nasRefreshInterval = setInterval(() => {
+      this.refreshNasStatus();
+      this.render();
+    }, 5000);
+  }
+
+  private leaveNasMonitor(): void {
+    if (this.nasRefreshInterval) {
+      clearInterval(this.nasRefreshInterval);
+      this.nasRefreshInterval = null;
+    }
+    this.state.screen = "welcome";
+  }
+
+  private refreshNasStatus(): void {
+    this.nasStatus = getNasStatus();
+  }
+
+  private async handleNasMonitorKey(key: KeyEvent): Promise<void> {
+    if (key.name === "escape" || key.name === "q") {
+      this.leaveNasMonitor();
+      return;
+    }
+
+    if (key.name === "d" || key.name === "m" || key.name === "a") {
+      // Need sudo for remounting system units
+      const check = Bun.spawnSync(["sudo", "-n", "true"], { stdout: "pipe", stderr: "pipe" });
+      if (check.exitCode !== 0) {
+        if (this.nasRefreshInterval) clearInterval(this.nasRefreshInterval);
+        await this.acquireSudo();
+        this.nasRefreshInterval = setInterval(() => {
+          this.refreshNasStatus();
+          this.render();
+        }, 5000);
+      }
+
+      const share = key.name === "d" ? "documents" : key.name === "m" ? "media" : "all";
+      const result = remountShare(share);
+      this.nasActionMessage = result.success
+        ? `Remounted ${share} successfully`
+        : `Error: ${result.error}`;
+      this.refreshNasStatus();
+    } else if (key.name === "s") {
+      const result = triggerSync();
+      this.nasActionMessage = result.success
+        ? "Sync triggered successfully"
+        : `Error: ${result.error}`;
+      this.refreshNasStatus();
     }
   }
 

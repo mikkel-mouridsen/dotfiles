@@ -7,3 +7,4 @@ singleton BluetoothService 1.0 BluetoothService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton WallpaperService 1.0 WallpaperService.qml
 singleton TailscaleService 1.0 TailscaleService.qml
+singleton NetworkStorageService 1.0 NetworkStorageService.qml

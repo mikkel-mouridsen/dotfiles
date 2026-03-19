@@ -10,6 +10,7 @@ const SCREEN_LABELS: Record<Screen, string> = {
   confirm: "Confirm",
   progress: "Install",
   complete: "Done",
+  "nas-monitor": "NAS Monitor",
 };
 
 function TopBar(currentScreen: Screen) {
@@ -18,6 +19,27 @@ function TopBar(currentScreen: Screen) {
     Text({ content: symbols.brand, fg: colors.mauve }),
     Text({ content: "Cobo OS", fg: colors.mauve, attributes: 1 }),
   );
+
+  if (currentScreen === "nas-monitor") {
+    return Box(
+      {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingX: 2,
+        paddingY: 0,
+        border: true,
+        borderStyle: "double",
+        borderColor: colors.mauve,
+        width: "100%",
+      },
+      brandSection,
+      Box(
+        { flexDirection: "row", gap: 1 },
+        Text({ content: "\uf0a0", fg: colors.mauve }),
+        Text({ content: "Network Storage Monitor", fg: colors.mauve, attributes: 1 }),
+      ),
+    );
+  }
 
   const stepDots = SCREENS.map((screen) => {
     const isCurrent = screen === currentScreen;

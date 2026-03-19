@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import "../../../Core" as Core
 import "../../../Services" as Services
@@ -8,6 +9,11 @@ import "../Components" as Components
 Components.CollapsibleSection {
     title: "Audio"
     icon: Core.Icons.volumeIcon(Services.VolumeService.volume, Services.VolumeService.muted)
+    actionIcon: Core.Icons.terminal
+    onActionClicked: {
+        Hyprland.dispatch("exec [float;size 900 600;center] ghostty -e wiremix")
+        Core.State.controlCenterOpen = false
+    }
     rightText: Services.VolumeService.volume + "%"
     expanded: true
 
