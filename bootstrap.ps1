@@ -10,9 +10,16 @@ $DOTFILES_DIR = if ($env:DOTFILES_DIR) { $env:DOTFILES_DIR } else { "$HOME\.dotf
 function Log($msg) { Write-Host "==> $msg" -ForegroundColor Blue }
 function Ok($msg) { Write-Host " + $msg" -ForegroundColor Green }
 function Fail($msg) { Write-Host " x $msg" -ForegroundColor Red; exit 1 }
+$script:OriginalPath = $env:PATH
+function RefreshPath {
+    # Merge Machine + User PATH with any session-only paths (like winget's WindowsApps)
+    $systemPath = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    $env:PATH = $systemPath + ";" + $script:OriginalPath
+}
 
 # -- 0. Check Developer Mode (needed for symlinks without admin) --
-$devMode = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name AllowDevelopmentWithoutDevLicense -ErrorAction SilentlyContinue).AllowDevelopmentWithoutDevLicense
+$regKey = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name AllowDevelopmentWithoutDevLicense -ErrorAction SilentlyContinue
+$devMode = if ($regKey) { $regKey.AllowDevelopmentWithoutDevLicense } else { 0 }
 if ($devMode -ne 1) {
     Write-Host ""
     Write-Host "  WARNING: Developer Mode is not enabled." -ForegroundColor Yellow
@@ -31,8 +38,7 @@ Ok "winget available"
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Log "Installing git..."
     winget install -e --id Git.Git --accept-package-agreements --accept-source-agreements
-    # Refresh PATH
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    RefreshPath
 }
 Ok "git available"
 
@@ -50,7 +56,11 @@ Ok "dotfiles at $DOTFILES_DIR"
 if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
     Log "Installing Bun..."
     irm bun.sh/install.ps1 | iex
-    $env:PATH = "$HOME\.bun\bin;$env:PATH"
+    RefreshPath
+    # Bun installs to ~/.bun/bin which may not be in system PATH yet
+    if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
+        $env:PATH = "$HOME\.bun\bin;$env:PATH"
+    }
 }
 $bunVersion = bun --version
 Ok "bun $bunVersion"
@@ -59,8 +69,7 @@ Ok "bun $bunVersion"
 if (-not (Get-Command zig -ErrorAction SilentlyContinue)) {
     Log "Installing Zig..."
     winget install -e --id zig.zig --accept-package-agreements --accept-source-agreements
-    # Refresh PATH
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
+    RefreshPath
 }
 $zigVersion = zig version
 Ok "zig $zigVersion"
