@@ -150,11 +150,15 @@ export class Executor {
       await this.runCommand(`brew install ${pkgs.brew.join(" ")}`);
     }
 
-    // Winget packages
+    // Winget packages (tolerate already-installed)
     if (this.packageManager === "winget" && pkgs.winget?.length) {
       for (const pkg of pkgs.winget) {
         this.log(`Installing ${pkg} via winget...`);
-        await this.runCommand(`winget install -e --id ${pkg} --accept-package-agreements --accept-source-agreements`);
+        try {
+          await this.runCommand(`winget install -e --id ${pkg} --accept-package-agreements --accept-source-agreements`);
+        } catch {
+          this.log(`${pkg} may already be installed, continuing...`);
+        }
       }
     }
 
