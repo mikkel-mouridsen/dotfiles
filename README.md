@@ -1,16 +1,24 @@
 # Dotfiles
 
-Personal dotfiles for Arch/CachyOS + Hyprland, managed with [GNU Stow](https://www.gnu.org/software/stow/) and an interactive TUI.
+Personal dotfiles for Arch/CachyOS + Hyprland, with cross-platform support for Windows (and macOS). Managed with [GNU Stow](https://www.gnu.org/software/stow/) (Linux/macOS) or a built-in symlinker (Windows) and an interactive TUI.
 
 ## Quick Start
 
-One-liner bootstrap for a fresh system:
+### Linux / macOS
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mikkel-mouridsen/dotfiles/main/bootstrap.sh | bash
 ```
 
-This installs dependencies (git, bun, stow), clones the repo, and launches the TUI to interactively select what to install.
+### Windows
+
+**Prerequisites:** Windows 11 with [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) (pre-installed). Enable [Developer Mode](ms-settings:developers) for symlink support without admin.
+
+```powershell
+iwr https://raw.githubusercontent.com/mikkel-mouridsen/dotfiles/main/bootstrap.ps1 | iex
+```
+
+This installs dependencies (git, bun, zig), clones the repo, and launches the TUI to interactively select what to install. On Windows, only cross-platform modules are available (git, nvim, starship, bat, claude, gh-dash, fastfetch).
 
 ## TUI Installer
 

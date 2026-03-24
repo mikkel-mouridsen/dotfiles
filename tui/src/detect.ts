@@ -1,5 +1,12 @@
-import { readFileSync, existsSync, lstatSync, readlinkSync, realpathSync } from "fs";
+import { readFileSync, existsSync, lstatSync, readdirSync, realpathSync } from "fs";
+import { join } from "path";
 import type { Distro, PackageManager } from "./types";
+
+export const isWindows = process.platform === "win32";
+
+export function getHome(): string {
+  return process.env.HOME || process.env.USERPROFILE || "";
+}
 
 const DISTRO_MAP: Record<string, Distro> = {
   arch: "arch",
@@ -14,6 +21,7 @@ const DISTRO_MAP: Record<string, Distro> = {
 };
 
 export function detectDistro(): Distro {
+  if (process.platform === "win32") return "windows";
   if (process.platform === "darwin") return "macos";
 
   try {
@@ -39,12 +47,15 @@ export function detectPackageManager(distro: Distro): PackageManager {
       return "apt";
     case "macos":
       return "brew";
+    case "windows":
+      return "winget";
     default:
       return "pacman";
   }
 }
 
 export async function detectAurHelper(): Promise<string | null> {
+  if (isWindows) return null;
   for (const helper of ["paru", "yay"]) {
     const result = Bun.spawnSync(["which", helper]);
     if (result.exitCode === 0) return helper;
@@ -53,38 +64,53 @@ export async function detectAurHelper(): Promise<string | null> {
 }
 
 export function detectDotfilesDir(): string {
+  const home = getHome();
   const candidates = [
     process.env.DOTFILES_DIR,
-    `${process.env.HOME}/.dotfiles`,
-    `${process.env.HOME}/dotfiles`,
+    join(home, ".dotfiles"),
+    join(home, "dotfiles"),
   ];
 
   for (const dir of candidates) {
-    if (dir && existsSync(`${dir}/tui/index.ts`)) return dir;
+    if (dir && existsSync(join(dir, "tui", "index.ts"))) return dir;
   }
 
   // Fall back to parent of tui directory
-  return new URL("../../", import.meta.url).pathname.replace(/\/$/, "");
+  let fallback = new URL("../../", import.meta.url).pathname.replace(/\/$/, "");
+  // On Windows, file:///C:/... gives pathname /C:/... — strip the leading slash
+  if (isWindows) fallback = fallback.replace(/^\/([A-Za-z]:)/, "$1");
+  return fallback;
+}
+
+export function walkFiles(dir: string): string[] {
+  const results: string[] = [];
+  try {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === ".DS_Store") continue;
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) results.push(...walkFiles(full));
+      else results.push(full);
+    }
+  } catch {}
+  return results;
 }
 
 export function isStowLinked(dotfilesDir: string, stowPackage: string): boolean {
-  const packageDir = `${dotfilesDir}/${stowPackage}`;
+  const packageDir = join(dotfilesDir, stowPackage);
   if (!existsSync(packageDir)) return false;
 
   try {
-    const result = Bun.spawnSync(["find", packageDir, "-type", "f", "-not", "-name", ".DS_Store"], {
-      stdout: "pipe",
-    });
-    const files = new TextDecoder().decode(result.stdout).trim().split("\n").filter(Boolean);
+    const files = walkFiles(packageDir);
     if (files.length === 0) return false;
 
     const firstFile = files[0];
-    const relativePath = firstFile.replace(`${packageDir}/`, "");
+    const relativePath = firstFile.slice(packageDir.length + 1);
+    const home = getHome();
 
     // Stow targets $HOME, so the expected location is $HOME/<relativePath>.
     // But some packages (e.g. greetd) have files under etc/ that get copied
     // to /etc/ rather than stow-linked — handle both cases.
-    const homePath = `${process.env.HOME}/${relativePath}`;
+    const homePath = join(home, relativePath);
 
     if (existsSync(homePath)) {
       // realpathSync resolves through symlinked ancestor directories,
@@ -95,9 +121,11 @@ export function isStowLinked(dotfilesDir: string, stowPackage: string): boolean 
 
     // For non-$HOME packages: check if the file exists at its absolute path
     // (e.g. etc/greetd/config.toml → /etc/greetd/config.toml)
-    const absolutePath = `/${relativePath}`;
-    if (existsSync(absolutePath)) {
-      return true;
+    if (!isWindows) {
+      const absolutePath = `/${relativePath}`;
+      if (existsSync(absolutePath)) {
+        return true;
+      }
     }
 
     return false;
@@ -108,7 +136,10 @@ export function isStowLinked(dotfilesDir: string, stowPackage: string): boolean 
 
 export function isDetectCommandPassing(command: string): boolean {
   try {
-    const result = Bun.spawnSync(["bash", "-c", command]);
+    const shell = isWindows
+      ? ["cmd", "/c", command]
+      : ["bash", "-c", command];
+    const result = Bun.spawnSync(shell);
     return result.exitCode === 0;
   } catch {
     return false;
@@ -122,6 +153,7 @@ export function getDistroName(distro: Distro): string {
     ubuntu: "Ubuntu",
     debian: "Debian",
     macos: "macOS",
+    windows: "Windows",
     unknown: "Unknown",
   };
   return names[distro];

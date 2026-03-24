@@ -1,5 +1,7 @@
+import { mkdirSync } from "fs";
 import type { DotfilesModule, Distro, PackageManager, ExecutionResults } from "./types";
-import { detectAurHelper } from "./detect";
+import { detectAurHelper, isWindows, getHome } from "./detect";
+import { link, unlink } from "./linker";
 
 type LogFn = (line: string) => void;
 
@@ -18,6 +20,7 @@ export class Executor {
   }
 
   async init(): Promise<void> {
+    if (this.distro === "windows") return;
     if (this.distro === "arch") {
       this.aurHelper = await detectAurHelper();
       if (!this.aurHelper) {
@@ -39,21 +42,33 @@ export class Executor {
 
       // 2. Create directories
       if (mod.dirs) {
+        const home = getHome();
         for (const dir of mod.dirs) {
-          const expanded = dir.replace("~", process.env.HOME!);
-          await this.runCommand(`mkdir -p "${expanded}"`);
+          const expanded = dir.replace("~", home);
+          mkdirSync(expanded, { recursive: true });
         }
       }
 
-      // 3. Stow packages (adopt existing files on conflict, then restore repo versions)
+      // 3. Link config files
       for (const pkg of mod.stowPackages) {
-        this.log(`Stowing ${pkg}...`);
-        try {
-          await this.runCommand(`cd "${this.dotfilesDir}" && stow -v --target="$HOME" "${pkg}"`);
-        } catch {
-          this.log(`Conflict detected — adopting existing files for ${pkg}...`);
-          await this.runCommand(`cd "${this.dotfilesDir}" && stow --adopt -v --target="$HOME" "${pkg}"`);
-          await this.runCommand(`cd "${this.dotfilesDir}" && git checkout -- "${pkg}"`);
+        if (isWindows) {
+          this.log(`Linking ${pkg}...`);
+          link(pkg, {
+            dotfilesDir: this.dotfilesDir,
+            homeDir: getHome(),
+            log: (msg) => this.log(msg),
+          });
+          // Restore repo versions after adopt
+          await this.runCommand(`git -C "${this.dotfilesDir}" checkout -- "${pkg}"`);
+        } else {
+          this.log(`Stowing ${pkg}...`);
+          try {
+            await this.runCommand(`cd "${this.dotfilesDir}" && stow -v --target="$HOME" "${pkg}"`);
+          } catch {
+            this.log(`Conflict detected — adopting existing files for ${pkg}...`);
+            await this.runCommand(`cd "${this.dotfilesDir}" && stow --adopt -v --target="$HOME" "${pkg}"`);
+            await this.runCommand(`cd "${this.dotfilesDir}" && git checkout -- "${pkg}"`);
+          }
         }
       }
 
@@ -80,8 +95,17 @@ export class Executor {
       this.log(`\n--- Removing ${mod.name} ---`);
 
       for (const pkg of mod.stowPackages) {
-        this.log(`Unstowing ${pkg}...`);
-        await this.runCommand(`cd "${this.dotfilesDir}" && stow -D --target="$HOME" "${pkg}"`);
+        if (isWindows) {
+          this.log(`Unlinking ${pkg}...`);
+          unlink(pkg, {
+            dotfilesDir: this.dotfilesDir,
+            homeDir: getHome(),
+            log: (msg) => this.log(msg),
+          });
+        } else {
+          this.log(`Unstowing ${pkg}...`);
+          await this.runCommand(`cd "${this.dotfilesDir}" && stow -D --target="$HOME" "${pkg}"`);
+        }
       }
 
       this.log(`Removed ${mod.name}`);
@@ -126,11 +150,20 @@ export class Executor {
       await this.runCommand(`brew install ${pkgs.brew.join(" ")}`);
     }
 
-    // Curl installs (for non-packaged software)
-    if (pkgs.curl?.length) {
+    // Winget packages
+    if (this.packageManager === "winget" && pkgs.winget?.length) {
+      for (const pkg of pkgs.winget) {
+        this.log(`Installing ${pkg} via winget...`);
+        await this.runCommand(`winget install -e --id ${pkg} --accept-package-agreements --accept-source-agreements`);
+      }
+    }
+
+    // Curl installs (for non-packaged software — skip on Windows, use winget instead)
+    if (pkgs.curl?.length && !isWindows) {
       for (const curl of pkgs.curl) {
         if (curl.skipIf) {
-          const check = Bun.spawnSync(["which", curl.skipIf]);
+          const whichCmd = isWindows ? "where" : "which";
+          const check = Bun.spawnSync([whichCmd, curl.skipIf]);
           if (check.exitCode === 0) {
             this.log(`Skipping ${curl.name} (already installed)`);
             continue;
@@ -152,16 +185,20 @@ export class Executor {
   }
 
   refreshSudo(): void {
+    if (isWindows) return;
     // Silently extend sudo timeout between modules
     Bun.spawnSync(["sudo", "-v", "-n"], { stdout: "pipe", stderr: "pipe" });
   }
 
   private async runCommand(command: string): Promise<string> {
-    const proc = Bun.spawn(["bash", "-c", command], {
+    const shell = isWindows
+      ? ["powershell", "-NoProfile", "-NonInteractive", "-Command", command]
+      : ["bash", "-c", command];
+    const proc = Bun.spawn(shell, {
       stdin: "inherit",
       stdout: "pipe",
       stderr: "pipe",
-      env: { ...process.env, HOME: process.env.HOME },
+      env: { ...process.env },
     });
 
     const fullOutput: string[] = [];

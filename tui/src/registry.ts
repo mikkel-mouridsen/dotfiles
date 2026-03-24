@@ -1,4 +1,6 @@
-import type { DotfilesModule } from "./types";
+import type { DotfilesModule, Distro } from "./types";
+
+const UNIX_ONLY: Distro[] = ["arch", "fedora", "ubuntu", "debian", "macos"];
 
 export const modules: DotfilesModule[] = [
   // ─── Shell ───────────────────────────────────────────────────
@@ -35,6 +37,7 @@ export const modules: DotfilesModule[] = [
         command: `FISH_PATH="$(command -v fish)" && grep -q "$FISH_PATH" /etc/shells || echo "$FISH_PATH" | sudo tee -a /etc/shells > /dev/null && [ "$SHELL" != "$FISH_PATH" ] && chsh -s "$FISH_PATH" || true`,
       },
     ],
+    onlyOn: UNIX_ONLY,
     manualSteps: [
       "Log out and back in for shell change to take effect",
     ],
@@ -51,6 +54,7 @@ export const modules: DotfilesModule[] = [
       dnf: [],
       apt: [],
       brew: ["starship"],
+      winget: ["Starship.Starship"],
       curl: [
         {
           name: "starship",
@@ -67,6 +71,7 @@ export const modules: DotfilesModule[] = [
     description: "Z shell with antidote plugin manager and custom config",
     category: "shell",
     core: false,
+    onlyOn: UNIX_ONLY,
     stowPackages: ["zsh"],
     systemPackages: {
       pacman: ["zsh"],
@@ -92,6 +97,7 @@ export const modules: DotfilesModule[] = [
     description: "Terminal multiplexer with catppuccin theme and custom keybinds",
     category: "terminal",
     core: true,
+    onlyOn: UNIX_ONLY,
     stowPackages: ["tmux"],
     systemPackages: {
       pacman: ["tmux"],
@@ -136,6 +142,7 @@ export const modules: DotfilesModule[] = [
       dnf: ["neovim"],
       apt: ["neovim"],
       brew: ["neovim"],
+      winget: ["Neovim.Neovim"],
     },
     manualSteps: [
       "Open nvim to let Lazy.nvim auto-install plugins",
@@ -155,6 +162,7 @@ export const modules: DotfilesModule[] = [
       dnf: ["bat"],
       apt: ["bat"],
       brew: ["bat"],
+      winget: ["sharkdp.bat"],
     },
     dirs: ["~/.config/bat/themes"],
   },
@@ -204,8 +212,16 @@ export const modules: DotfilesModule[] = [
       dnf: ["git"],
       apt: ["git"],
       brew: ["git", "lazygit"],
+      winget: ["Git.Git", "JesseDuffield.lazygit"],
     },
     dirs: ["~/.config/git"],
+    postInstall: [
+      {
+        description: "Set XDG_CONFIG_HOME for config path compatibility",
+        command: '[Environment]::SetEnvironmentVariable("XDG_CONFIG_HOME", "$env:USERPROFILE\\.config", "User")',
+        onlyOn: ["windows"],
+      },
+    ],
     manualSteps: [
       "Create ~/.gitconfig.local with [user] name and email",
     ],
@@ -231,6 +247,7 @@ export const modules: DotfilesModule[] = [
       pacman: ["github-cli"],
       dnf: [],
       brew: ["gh"],
+      winget: ["GitHub.cli"],
     },
     dirs: ["~/.config/gh-dash"],
   },
@@ -246,6 +263,7 @@ export const modules: DotfilesModule[] = [
     systemPackages: {
       pacman: ["fastfetch"],
       dnf: ["fastfetch"],
+      winget: ["Fastfetch-cli.Fastfetch"],
     },
   },
   {
@@ -254,6 +272,7 @@ export const modules: DotfilesModule[] = [
     description: "System information tool with ASCII art",
     category: "system",
     core: false,
+    onlyOn: UNIX_ONLY,
     stowPackages: ["neofetch"],
     systemPackages: {
       pacman: ["neofetch"],

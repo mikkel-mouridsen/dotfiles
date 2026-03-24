@@ -1,5 +1,5 @@
-export type Distro = "arch" | "fedora" | "ubuntu" | "debian" | "macos" | "unknown";
-export type PackageManager = "pacman" | "dnf" | "apt" | "brew";
+export type Distro = "arch" | "fedora" | "ubuntu" | "debian" | "macos" | "windows" | "unknown";
+export type PackageManager = "pacman" | "dnf" | "apt" | "brew" | "winget";
 export type Category = "shell" | "terminal" | "editor" | "desktop" | "appearance" | "dev-tools" | "system" | "storage" | "social";
 
 export interface CurlPackage {
@@ -15,6 +15,7 @@ export interface SystemPackages {
   dnf?: string[];
   apt?: string[];
   brew?: string[];
+  winget?: string[];
   curl?: CurlPackage[];
   cargo?: string[];
 }

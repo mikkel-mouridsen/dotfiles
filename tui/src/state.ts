@@ -1,8 +1,9 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import type { DotfilesState, Distro } from "./types";
+import { getHome } from "./detect";
 
-const STATE_PATH = `${process.env.HOME}/.dotfiles-state.json`;
+const STATE_PATH = join(getHome(), ".dotfiles-state.json");
 
 export function loadState(): DotfilesState | null {
   try {

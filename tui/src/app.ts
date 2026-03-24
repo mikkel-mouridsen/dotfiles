@@ -1,8 +1,10 @@
 import { createCliRenderer, type CliRenderer, type KeyEvent, instantiate } from "@opentui/core";
 import type { AppState, Screen, InstallMode, Category, DotfilesModule, ExecutionResults, ConfigPrompt } from "./types";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { dirname } from "path";
 import { modules, getModuleById, getCategories } from "./registry";
-import { detectDistro, detectPackageManager, detectDotfilesDir, isStowLinked, isDetectCommandPassing } from "./detect";
+import { detectDistro, detectPackageManager, detectDotfilesDir, isStowLinked, isDetectCommandPassing, isWindows, getHome } from "./detect";
+import { isLinked } from "./linker";
 import { loadState, saveState, createInitialState, markInstalled, markRemoved, getInstalledModuleIds } from "./state";
 import { resolveDependencies, checkDependents, topologicalSort, reverseTopologicalSort, hasConflicts } from "./deps";
 import { executeInstallPlan } from "./executor";
@@ -72,7 +74,9 @@ export class App {
     for (const mod of availableModules) {
       if (installedModules.has(mod.id)) continue;
       if (mod.stowPackages.length > 0) {
-        const allLinked = mod.stowPackages.every((pkg) => isStowLinked(dotfilesDir, pkg));
+        const allLinked = isWindows
+          ? mod.stowPackages.every((pkg) => isLinked(dotfilesDir, pkg, getHome()))
+          : mod.stowPackages.every((pkg) => isStowLinked(dotfilesDir, pkg));
         if (allLinked) installedModules.add(mod.id);
       } else if (mod.detectCommand) {
         if (isDetectCommandPassing(mod.detectCommand)) installedModules.add(mod.id);
@@ -403,6 +407,7 @@ export class App {
   }
 
   private needsSudo(toInstall: DotfilesModule[], toRemove: DotfilesModule[]): boolean {
+    if (isWindows) return false;
     return [...toInstall, ...toRemove].some((mod) => {
       const hasSudoPackages =
         (mod.systemPackages.pacman?.length ?? 0) > 0 ||
@@ -464,7 +469,7 @@ export class App {
     console.log("\n  ━━━ Module Configuration ━━━\n");
 
     for (const { mod, prompt } of prompts) {
-      const configPath = prompt.configFile.replace("~", process.env.HOME!);
+      const configPath = prompt.configFile.replace("~", getHome());
 
       // Read current value from config file if it exists
       let currentValue = prompt.default;
@@ -474,9 +479,25 @@ export class App {
         if (match) currentValue = match[1];
       }
 
-      // Prompt user — use read -s for secret fields to hide input
+      // Prompt user
       let proc;
-      if (prompt.secret) {
+      if (isWindows) {
+        const displayDefault = prompt.secret ? (currentValue ? "********" : "empty") : currentValue;
+        const label = `  [${mod.name}] ${prompt.label} [${displayDefault}]: `;
+        if (prompt.secret) {
+          proc = Bun.spawnSync(
+            ["powershell", "-NoProfile", "-Command",
+             `Write-Host '${label.replace(/'/g, "''")}' -NoNewline; $v = Read-Host -AsSecureString; [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($v))`],
+            { stdin: "inherit", stdout: "pipe", stderr: "inherit" },
+          );
+        } else {
+          proc = Bun.spawnSync(
+            ["powershell", "-NoProfile", "-Command",
+             `Write-Host '${label.replace(/'/g, "''")}' -NoNewline; Read-Host`],
+            { stdin: "inherit", stdout: "pipe", stderr: "inherit" },
+          );
+        }
+      } else if (prompt.secret) {
         const displayDefault = currentValue ? "********" : "empty";
         proc = Bun.spawnSync(
           ["bash", "-c", `read -srp "  [${mod.name}] ${prompt.label} [${displayDefault}]: " val; echo "$val"`],
@@ -504,9 +525,7 @@ export class App {
         }
         writeFileSync(configPath, content);
       } else if (prompt.createIfMissing) {
-        // Only create files that aren't managed by stow
-        const dir = configPath.substring(0, configPath.lastIndexOf("/"));
-        Bun.spawnSync(["mkdir", "-p", dir]);
+        mkdirSync(dirname(configPath), { recursive: true });
         writeFileSync(configPath, `${prompt.configKey}=${value}\n`, { mode: 0o600 });
       }
 
