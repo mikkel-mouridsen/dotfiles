@@ -120,11 +120,15 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-        onExited: exitCode => {
+        onExited: (exitCode, exitStatus) => {
+            // exitStatus !== 0 means the process was terminated (e.g. a newer
+            // refresh superseded this one) — that's not a real chezmoi error.
+            if (exitStatus !== 0) return
             if (exitCode !== 0) {
                 root.lastError = String(stderr.text).trim() || ("chezmoi status exit " + exitCode)
                 return
             }
+            root.lastError = ""   // status succeeded — clear any stale error
             const lines = String(stdout.text).split("\n")
             const files = []
             for (let i = 0; i < lines.length; i++) {
@@ -154,7 +158,8 @@ Item {
         command: [root.chezmoiBin, "git", "--", "rev-list", "--left-right", "--count", "HEAD...@{u}"]
         running: false
         stdout: StdioCollector {}
-        onExited: exitCode => {
+        onExited: (exitCode, exitStatus) => {
+            if (exitStatus !== 0) return   // terminated, not a real result
             if (exitCode !== 0) {
                 // No upstream configured / detached — treat as nothing to push/pull.
                 root.ahead = 0
@@ -176,7 +181,8 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-        onExited: exitCode => {
+        onExited: (exitCode, exitStatus) => {
+            if (exitStatus !== 0) return
             if (exitCode === 0) {
                 root.lastDiff = String(stdout.text)
             } else {
@@ -193,8 +199,9 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-        onExited: exitCode => {
+        onExited: (exitCode, exitStatus) => {
             root.busy = false
+            if (exitStatus !== 0) return   // terminated (e.g. shell reload) — not a failure
             if (exitCode === 0) {
                 root.lastError = ""
                 root.lastSync = new Date()
@@ -225,8 +232,9 @@ Item {
         running: false
         stdout: StdioCollector {}
         stderr: StdioCollector {}
-        onExited: exitCode => {
+        onExited: (exitCode, exitStatus) => {
             root.busy = false
+            if (exitStatus !== 0) return   // terminated (e.g. shell reload) — not a failure
             if (exitCode === 0) {
                 root.lastError = ""
                 root.lastSync = new Date()
@@ -242,7 +250,9 @@ Item {
 
     // ===== PUBLIC API =====
     function refreshStatus() {
-        statusProc.running = false
+        // Don't restart an in-flight status: setting running=false would SIGTERM
+        // it (exit 15) and the handler would misread that as a failure.
+        if (statusProc.running) return
         statusProc.command = [root.chezmoiBin, "status"]
         statusProc.running = true
     }
@@ -253,7 +263,7 @@ Item {
     }
 
     function loadDiff() {
-        diffProc.running = false
+        if (diffProc.running) return
         diffProc.running = true
     }
 
