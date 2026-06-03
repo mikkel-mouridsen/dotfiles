@@ -1,0 +1,6 @@
+1password
+filebot
+iptvnator-bin
+pacsea-bin
+tsui
+ttf-rounded-mplus

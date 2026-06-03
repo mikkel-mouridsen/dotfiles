@@ -1,0 +1,36 @@
+{
+  "id": "dotfiles-sync",
+  "name": "Dotfiles Sync",
+  "version": "0.1.0",
+  "minNoctaliaVersion": "3.6.0",
+  "author": "cobo",
+  "license": "MIT",
+  "repository": "local",
+  "description": "Sync your chezmoi-managed dotfiles: see local/remote drift in the bar and Pull / Push / Diff from a panel.",
+  "tags": [
+    "Bar",
+    "Panel",
+    "Utility"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "chezmoiPath": "chezmoi",
+      "statusPollSec": 15,
+      "autoFetchMinutes": 30,
+      "commitTemplate": "sync from {host}",
+      "showNotifications": true,
+      "openDiffInTerminal": false,
+      "terminal": "ghostty",
+      "iconColor": "none"
+    }
+  }
+}

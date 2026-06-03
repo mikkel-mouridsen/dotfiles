@@ -1,0 +1,13 @@
+# Secrets — never manage these (re-created per machine via `gh auth login`
+# and the Noctalia NAS Manager settings UI).
+.config/gh/hosts.yml
+.config/gh/config.yml
+.config/noctalia/plugins/nas-manager/settings.json
+.config/noctalia/plugins/mullvad/settings.json
+.config/noctalia/plugins/tailscale/settings.json
+.config/noctalia/plugins/model-usage/settings.json
+
+# Caches / volatile editor state.
+.config/micro/buffers
+.config/Code - OSS/**
+!.config/Code - OSS/User/settings.json

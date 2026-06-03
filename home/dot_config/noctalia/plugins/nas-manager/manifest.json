@@ -1,0 +1,49 @@
+{
+  "id": "nas-manager",
+  "name": "NAS Manager",
+  "version": "0.2.1",
+  "minNoctaliaVersion": "3.6.0",
+  "author": "cobo",
+  "license": "MIT",
+  "repository": "local",
+  "description": "Mount, unmount, and monitor CIFS/SMB network shares with a polkit prompt.",
+  "tags": [
+    "Bar",
+    "Panel",
+    "Network",
+    "Utility"
+  ],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "controlCenterWidget": "ControlCenterWidget.qml",
+    "panel": "Panel.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "shares": [
+        {
+          "id": "nas-documents",
+          "name": "NAS Documents",
+          "host": "192.168.1.68",
+          "share": "documents",
+          "mountpoint": "/mnt/nas/documents",
+          "username": "cobo",
+          "credentialsFile": "",
+          "extraOptions": "iocharset=utf8,vers=3.0",
+          "version": "3.0"
+        }
+      ],
+      "pollIntervalSec": 5,
+      "showBadge": true,
+      "hideWhenEmpty": false,
+      "showNotifications": true,
+      "fileBrowser": "nautilus",
+      "iconColor": "none"
+    }
+  }
+}

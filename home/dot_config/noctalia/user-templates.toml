@@ -1,0 +1,17 @@
+[config]
+
+[templates]
+
+# User-defined templates
+# Add your custom templates below
+# Example:
+# [templates.myapp]
+# input_path = "~/.config/noctalia/templates/myapp.css"
+# output_path = "~/.config/myapp/theme.css"
+# post_hook = "myapp --reload-theme"
+
+[templates.logseq]
+input_path = "~/.config/noctalia/templates/logseq.css"
+output_path = "/mnt/nas/documents/Documents/Notes/logseq/custom.css"
+# Logseq watches custom.css and hot-reloads it, so no post_hook is needed.
+

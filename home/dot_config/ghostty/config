@@ -1,0 +1,33 @@
+# ── Font ─────────────────────────────────────────────────────────
+font-family = MesloLGS Nerd Font
+font-size = 14
+font-feature = calt
+font-feature = liga
+adjust-cell-height = 20%
+
+# ── Theme ────────────────────────────────────────────────────────
+theme = noctalia
+background-opacity = 0.95
+
+# ── Window ───────────────────────────────────────────────────────
+window-padding-x = 12
+window-padding-y = 8
+window-inherit-working-directory = false
+confirm-close-surface = false
+quit-after-last-window-closed = true
+resize-overlay = never
+macos-titlebar-style = transparent
+
+# ── Cursor ───────────────────────────────────────────────────────
+cursor-style = bar
+cursor-style-blink = false
+
+# ── Shell ────────────────────────────────────────────────────────
+# Use fish on systems where it's installed; falls back to system default if not.
+# Uncomment the line below once fish is bootstrapped on this machine:
+command = fish
+
+# ── Misc ─────────────────────────────────────────────────────────
+scrollback-limit = 4294967295
+quick-terminal-animation-duration = 1
+copy-on-select = clipboard

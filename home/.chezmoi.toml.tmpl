@@ -1,0 +1,7 @@
+{{- /* Asked once per machine on `chezmoi init`; stored in the local chezmoi
+       config (never committed). Templates branch on .chassis for the few
+       hardware-specific differences between the desktop and the laptop. */ -}}
+{{- $chassis := promptStringOnce . "chassis" "Machine type (desktop or laptop)" -}}
+
+[data]
+    chassis = {{ $chassis | quote }}
